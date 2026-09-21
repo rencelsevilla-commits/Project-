@@ -1,0 +1,1 @@
+# IT105 Capture the Knowledge\n\nStudent: index.html\nTV Ranking: monitor.html\nSupabase backend is configured and Realtime is enabled for the teams table.\n
