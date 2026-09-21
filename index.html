@@ -645,8 +645,8 @@ function makeTeamId(){
   return 'team-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
 }
 
-const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
-const SUPABASE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE";
+const SUPABASE_URL = "https://rhhijqcsryqfcmysopxr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_-Wdl-SdwCmR1YB_GIB-Kkg_cA_09H-B";
 let sb=null;
 if(window.supabase && !SUPABASE_URL.includes('PASTE_')){
   try{ sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY); }catch(e){ console.warn('Supabase init failed',e); }
@@ -658,13 +658,14 @@ async function syncTeam(status='IN PROGRESS'){
     team_id:teamId,
     team_name:teamName,
     score:Number(score.toFixed(1)),
+    max_score:18,
     solved:solved.filter(Boolean).length,
-    total:challenges.length,
+    total_challenges:challenges.length,
     current_challenge:Math.min(current+1,challenges.length),
     status,
     updated_at:new Date().toISOString()
   };
-  const {error}=await sb.from('ctf_teams').upsert(payload,{onConflict:'team_id'});
+  const {error}=await sb.from('teams').upsert(payload,{onConflict:'team_id'});
   if(error) console.warn('Score sync failed:',error.message);
 }
 
