@@ -733,8 +733,40 @@ async function submitAnswer(){
   }
   attempts--; const penalty=penaltyFor(current); score=Math.max(0,score-penalty); document.getElementById("attempts").textContent=attempts; updateScoreHUD(); await syncTeam('IN PROGRESS');
   const badge=document.getElementById("attemptBadge"); badge.className="attemptBadge "+(attempts<=1?'danger':attempts<=2?'warning':''); panel.classList.remove('shake'); void panel.offsetWidth; panel.classList.add('shake');
-  if(attempts<=0){fb.textContent="ACCESS LOCKED — ATTEMPTS EXHAUSTED. PENALTY: -"+penalty+" PT.";fb.className="feedback bad";input.disabled=true;submit.disabled=true;document.getElementById("lockOverlay").style.display="flex";syncTeam('LOCKED');}
-  else{fb.textContent="ACCESS DENIED — INCORRECT. -"+penalty+" PT. ATTEMPTS REMAINING: "+attempts;fb.className="feedback bad";input.select();}
+  if(attempts<=0){
+    fb.textContent="ACCESS LOCKED — 3 ATTEMPTS USED. PENALTY: -"+penalty+" PT.";
+    fb.className="feedback bad";
+    input.disabled=true;
+    submit.disabled=true;
+    document.getElementById("lockOverlay").style.display="flex";
+    startLockCountdown();
+    syncTeam('LOCKED');
+  } else {
+    fb.textContent="ACCESS DENIED — INCORRECT. -"+penalty+" PT. ATTEMPTS REMAINING: "+attempts+" / "+maxAttemptsFor(current);
+    fb.className="feedback bad";
+    input.select();
+  }
+}
+
+function startLockCountdown(){
+  const card=document.querySelector("#lockOverlay .lockCard");
+  if(!card) return;
+  let n=3;
+  card.innerHTML=`
+    <h3>CHALLENGE LOCKED</h3>
+    <p>All 3 attempts were used. You cannot continue to the next challenge.</p>
+    <div class="rank">LOCKING SESSION IN <span id="lockCount">3</span>...</div>
+  `;
+  const el=document.getElementById("lockCount");
+  const timer=setInterval(()=>{
+    n--;
+    if(el) el.textContent=n;
+    if(n<=0){
+      clearInterval(timer);
+      if(el) el.parentElement.innerHTML="SESSION LOCKED — NO FURTHER ATTEMPTS";
+      syncTeam('LOCKED');
+    }
+  },1000);
 }
 
 function toggleHint(){const h=document.getElementById("hint");h.style.display=h.style.display==='block'?'none':'block';}
