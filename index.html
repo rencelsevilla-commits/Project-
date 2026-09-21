@@ -723,53 +723,32 @@ function render(){
 
 async function submitAnswer(){
   const c=challenges[current], value=norm(document.getElementById("answer").value), fb=document.getElementById("feedback"), panel=document.getElementById("mainPanel"), submit=document.querySelector(".answerRow button"), input=document.getElementById("answer");
-  if(!value){fb.textContent="ACCESS DENIED — ENTER AN ANSWER FIRST.";fb.className="feedback bad";input.focus();return;}
-  const answers=Array.isArray(c.answer)?c.answer:[c.answer]; const accepted=answers.map(norm).includes(value);
+  if(!value){ fb.textContent="ACCESS DENIED — ENTER AN ANSWER FIRST."; fb.className="feedback bad"; input.focus(); return; }
+  const answers=Array.isArray(c.answer)?c.answer:[c.answer];
+  const accepted=answers.map(norm).includes(value);
   if(accepted){
     const earned=Number(c.points); score=Math.min(18,score+earned); solved[current]=true;
-    fb.textContent="ACCESS GRANTED — CORRECT. +"+earned+" POINT"+(earned>1?'S':'')+" // NEXT LEVEL UNLOCKED."; fb.className="feedback good"; input.disabled=true; submit.disabled=true;
-    document.getElementById("bar").style.width=((current+1)/15*100)+"%"; updateScoreHUD(); renderMissions(); await syncTeam(current===challenges.length-1?'COMPLETED':'IN PROGRESS');
+    fb.textContent="ACCESS GRANTED — CORRECT. +"+earned+" POINT"+(earned>1?'S':'')+" // NEXT LEVEL UNLOCKED."; fb.className="feedback good";
+    input.disabled=true; submit.disabled=true; updateScoreHUD(); renderMissions();
+    await syncTeam(current===challenges.length-1?'COMPLETED':'IN PROGRESS');
     setTimeout(()=>{if(current<challenges.length-1){current++;render();}else finish();},700); return;
   }
-  attempts--; const penalty=penaltyFor(current); score=Math.max(0,score-penalty); document.getElementById("attempts").textContent=attempts; updateScoreHUD(); await syncTeam('IN PROGRESS');
-  const badge=document.getElementById("attemptBadge"); badge.className="attemptBadge "+(attempts<=1?'danger':attempts<=2?'warning':''); panel.classList.remove('shake'); void panel.offsetWidth; panel.classList.add('shake');
+  attempts--; const penalty=penaltyFor(current); score=Math.max(0,score-penalty);
+  document.getElementById("attempts").textContent=attempts; updateScoreHUD();
+  const badge=document.getElementById("attemptBadge"); badge.className="attemptBadge "+(attempts<=1?'danger':attempts<=2?'warning':'');
+  panel.classList.remove('shake'); void panel.offsetWidth; panel.classList.add('shake');
+  await syncTeam('IN PROGRESS');
   if(attempts<=0){
-    fb.textContent="ACCESS LOCKED — 3 ATTEMPTS USED. PENALTY: -"+penalty+" PT.";
-    fb.className="feedback bad";
-    input.disabled=true;
-    submit.disabled=true;
-    document.getElementById("lockOverlay").style.display="flex";
-    startLockCountdown();
-    syncTeam('LOCKED');
-  } else {
-    fb.textContent="ACCESS DENIED — INCORRECT. -"+penalty+" PT. ATTEMPTS REMAINING: "+attempts+" / "+maxAttemptsFor(current);
-    fb.className="feedback bad";
-    input.select();
+    solved[current]=true;
+    fb.textContent="CHALLENGE FAILED — 3 ATTEMPTS USED. +0 POINTS. -"+penalty+" PT. MOVING TO NEXT CHALLENGE...";
+    fb.className="feedback bad"; input.disabled=true; submit.disabled=true;
+    updateScoreHUD(); renderMissions();
+    if(current<challenges.length-1){ current++; await syncTeam('IN PROGRESS'); setTimeout(()=>render(),500); }
+    else { await syncTeam('COMPLETED'); setTimeout(()=>finish(),500); }
+    return;
   }
+  fb.textContent="ACCESS DENIED — INCORRECT. -"+penalty+" PT. ATTEMPTS REMAINING: "+attempts+" / "+maxAttemptsFor(current); fb.className="feedback bad"; input.select();
 }
-
-function startLockCountdown(){
-  const card=document.querySelector("#lockOverlay .lockCard");
-  if(!card) return;
-  let n=3;
-  card.innerHTML=`
-    <h3>CHALLENGE LOCKED</h3>
-    <p>All 3 attempts were used. You cannot continue to the next challenge.</p>
-    <div class="rank">LOCKING SESSION IN <span id="lockCount">3</span>...</div>
-  `;
-  const el=document.getElementById("lockCount");
-  const timer=setInterval(()=>{
-    n--;
-    if(el) el.textContent=n;
-    if(n<=0){
-      clearInterval(timer);
-      if(el) el.parentElement.innerHTML="SESSION LOCKED — NO FURTHER ATTEMPTS";
-      syncTeam('LOCKED');
-    }
-  },1000);
-}
-
-function toggleHint(){const h=document.getElementById("hint");h.style.display=h.style.display==='block'?'none':'block';}
 
 function startCTF(){
   const input=document.getElementById('teamNameInput'); const name=(input?.value||'').trim().replace(/\s+/g,' ');
