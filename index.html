@@ -770,6 +770,16 @@ document.addEventListener('DOMContentLoaded',()=>{
   updateScoreHUD(); renderMissions();
 });
 
+function toggleHint(){
+  const h=document.getElementById("hint");
+  const box=document.querySelector(".hint");
+  if(!h || !box) return;
+  const open=h.style.display==="block";
+  h.style.display=open?"none":"block";
+  const text=box.firstChild;
+  if(text) text.textContent=open?"[ ? ] OPEN HINT":"[ − ] CLOSE HINT";
+}
+
 function toggleRot13Guide(){
   const g=document.getElementById("rot13Guide");
   const b=document.querySelector(".rot13-toggle");
