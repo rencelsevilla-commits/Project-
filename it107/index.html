@@ -347,7 +347,7 @@ body:has(#matrixRain){overflow-x:hidden}
 
 <div class="layout">
 <aside class="panel">
-  <div class="panelTitle">MISSION LIST // 15</div>
+  <div class="panelTitle">MISSION LIST // 20</div>
   <div class="missions" id="missions"></div>
   <div class="progress">
     <div style="font-size:10px;color:#6c9279">OVERALL PROGRESS</div>
@@ -480,8 +480,7 @@ const challenges = [
     "type": "Forensics",
     "points": 1,
     "attempts": 3,
-    "scramble": "BLVTRYAIULNEI",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. An old operating system has a known weakness that an attacker may use. What is the weakness called?",
+    "question": "Solve the clue and identify the security term. An old operating system has a known weakness that an attacker may use. What is the weakness called?",
     "hint": "Identify the weakness, not the person trying to use it.",
     "guide": "A weakness in a system, process, or control is the key clue.",
     "answer": "VULNERABILITY"
@@ -528,14 +527,10 @@ const challenges = [
     "type": "Evidence Analysis",
     "points": 1,
     "attempts": 3,
-    "scramble": "KEGGOYLER",
     "question": "FORENSIC CLUE: the malware secretly records each key pressed. Complete the tool name: KEY _ _ G E R. What is the tool called?",
     "hint": "It starts with KEY and ends with GER.",
     "guide": "The PPT identifies this as a tool that records keystrokes and may steal passwords.",
-    "answer": [
-      "KEYLOGGER",
-      "SPYWARE"
-    ]
+    "answer": "KEYLOGGER"
   },
   {
     "title": "THE ENCODED RANSOM",
@@ -584,7 +579,6 @@ const challenges = [
     "type": "Pattern Recognition",
     "points": 1,
     "attempts": 3,
-    "scramble": "SODD",
     "question": "Three clues: (1) a service becomes unavailable, (2) traffic comes from many devices, (3) legitimate users cannot connect. Decode the acronym: D _ S. What is the three-letter attack acronym?",
     "hint": "The middle letter stands for 'istributed'.",
     "guide": "The PPT describes a denial-of-service attack distributed across multiple sources.",
@@ -601,7 +595,6 @@ const challenges = [
     "type": "Incident Reconstruction",
     "points": 1,
     "attempts": 3,
-    "scramble": "MTIM",
     "question": "Two endpoints believe they are communicating directly, but an attacker secretly sits between them and may steal a session token. CTF FLAG: M _ T M. Complete the four-letter acronym.",
     "hint": "M = Man, I = In, T = The, M = Middle.",
     "guide": "The attack intercepts communication between two parties.",
@@ -645,7 +638,6 @@ const challenges = [
     "type": "Policy Investigation",
     "points": 1,
     "attempts": 3,
-    "scramble": "SLLGEATPRIEVIE",
     "question": "A student account needs to upload assignments but must not have administrator access. Give only the minimum permissions required. Name the principle: LEAST OF ________.",
     "hint": "The missing word begins with PRIV- and means a special right or permission.",
     "guide": "This principle grants users only the access necessary for their tasks.",
@@ -660,9 +652,8 @@ const challenges = [
     "type": "Acronym Decode",
     "points": 1,
     "attempts": 3,
-    "scramble": "CPN",
-    "question": "Decode the agency initials from this clue: NATIONAL + PRIVACY + COMMISSION. Submit the official three-letter acronym that regulates compliance with the Data Privacy Act.",
-    "hint": "Take the first letter of each word in the agency's name.",
+    "question": "NUMBER CODE // Use A=1, B=2, C=3 ... Z=26. Decode 14-16-3 to identify the Philippine agency that regulates compliance with the Data Privacy Act. Submit the three-letter acronym.",
+    "hint": "Convert each number to its matching alphabet letter: 14=N, 16=P, 3=C.",
     "guide": "The agency is listed in the Week 7–8 lesson on Philippine information-assurance institutions.",
     "answer": [
       "NPC",
@@ -675,7 +666,6 @@ const challenges = [
     "type": "Missing Letters",
     "points": 1,
     "attempts": 3,
-    "scramble": "PUA",
     "question": "A policy defines what users may and may not do on an organization's systems. Complete the abbreviation: A _ P. Submit the full policy name or its three-letter abbreviation.",
     "hint": "The missing middle letter is U.",
     "guide": "The policy's name starts with Acceptable and ends with Policy.",
@@ -690,8 +680,7 @@ const challenges = [
     "type": "Analysis",
     "points": 2,
     "attempts": 5,
-    "scramble": "10072OSI",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. Which ISO/IEC standard specifies the requirements for establishing, implementing, maintaining, and improving an Information Security Management System, and can be used for certification?",
+    "question": "Solve the clue and identify the security term. Which ISO/IEC standard specifies the requirements for establishing, implementing, maintaining, and improving an Information Security Management System, and can be used for certification?",
     "hint": "Compare the roles of ISO/IEC 27001 and ISO/IEC 27002.",
     "guide": "The PPT says this standard defines the ISMS requirements and can be used for certification.",
     "answer": [
@@ -706,8 +695,7 @@ const challenges = [
     "type": "Reverse Engineering",
     "points": 2,
     "attempts": 3,
-    "scramble": "20072OSI",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. Which ISO/IEC standard provides best-practice guidance for implementing information security controls but is not certifiable on its own?",
+    "question": "Solve the clue and identify the security term. Which ISO/IEC standard provides best-practice guidance for implementing information security controls but is not certifiable on its own?",
     "hint": "This standard explains the practical 'how' for security controls.",
     "guide": "The PPT contrasts the requirements standard with the guidance standard.",
     "answer": [
@@ -722,7 +710,6 @@ const challenges = [
     "type": "Number Decode",
     "points": 2,
     "attempts": 3,
-    "scramble": "0RA3117",
     "question": "The Data Privacy Act was passed in 2012. Fill in the missing digits of its law number: RA 10_73. Submit the full RA number or just the five digits.",
     "hint": "The missing digit is 1.",
     "guide": "The Week 7–8 PPT identifies the law as Republic Act 10173.",
@@ -739,7 +726,6 @@ const challenges = [
     "type": "Timed Intelligence",
     "points": 2,
     "attempts": 5,
-    "scramble": "O72SHUR",
     "question": "A qualifying personal-data breach must be reported within the deadline shown in your Week 7–8 lesson. Complete the token: 7_ HOURS. Submit the number of hours.",
     "hint": "The missing digit is 2. Enter the number only or include HOURS.",
     "guide": "Use the specific deadline stated in the class PPT.",
@@ -748,7 +734,7 @@ const challenges = [
       "72"
     ]
   }
-];
+]];
 
 const pointValues = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2];
 let current=0;
