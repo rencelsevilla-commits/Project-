@@ -739,6 +739,7 @@ const challenges = [
   }
 ];
 
+const originalChallengeOrder = challenges.slice();
 const pointValues = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2];
 let current=0;
 let score=0;
@@ -941,7 +942,7 @@ function finish(){
   document.getElementById("quiz").style.display="none"; document.getElementById("complete").style.display="block"; document.getElementById("bar").style.width="100%"; document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 24"; document.getElementById("sideScore").textContent=score.toFixed(1).replace('.0',''); document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 24"; document.getElementById("access").textContent="ALL ACCESS"; updateScoreHUD(); renderMissions(); syncTeam('COMPLETED');
 }
 
-function restart(){ current=0;score=0;wrongAttempts=0;totalPenalty=0;skipUsed=false;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
+function restart(){ challenges.splice(0,challenges.length,...originalChallengeOrder); current=0;score=0;wrongAttempts=0;totalPenalty=0;skipUsed=false;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
 
 document.addEventListener('DOMContentLoaded',()=>{
   const saved=sessionStorage.getItem('it107_team_name'); if(saved){const i=document.getElementById('teamNameInput');if(i)i.value=saved;}
