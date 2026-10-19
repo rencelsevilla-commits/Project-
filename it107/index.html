@@ -477,12 +477,12 @@ const challenges = [
   {
     "title": "THE WEAK POINT",
     "category": "THREATS & VULNERABILITIES",
-    "type": "Forensics",
+    "type": "Logic Puzzle / Root Cause",
     "points": 1,
     "attempts": 3,
-    "question": "Solve the clue and identify the security term. An old operating system has a known weakness that an attacker may use. What is the weakness called?",
-    "hint": "Identify the weakness, not the person trying to use it.",
-    "guide": "A weakness in a system, process, or control is the key clue.",
+    "question": "INCIDENT PUZZLE: A server was breached. Evidence shows the attacker entered through an old, unpatched service. The attacker is the threat actor; the method used is the exploit. What is the underlying weakness that the administrator should fix?",
+    "hint": "Do not name the attacker or the exploit. Name the weakness in the system.",
+    "guide": "A weakness in a system, process, or control is a vulnerability.",
     "answer": "VULNERABILITY"
   },
   {
@@ -524,12 +524,12 @@ const challenges = [
   {
     "title": "THE KEYSTROKE WATCHER",
     "category": "MALWARE / DIGITAL FORENSICS",
-    "type": "Evidence Analysis",
+    "type": "Evidence Deduction",
     "points": 1,
     "attempts": 3,
-    "question": "FORENSIC CLUE: the malware secretly records each key pressed. Complete the tool name: KEY _ _ G E R. What is the tool called?",
-    "hint": "It starts with KEY and ends with GER.",
-    "guide": "The PPT identifies this as a tool that records keystrokes and may steal passwords.",
+    "question": "THREE CLUES: (1) The victim typed a password. (2) The attacker later knew the exact keys pressed. (3) No fake login page was used. Identify the tool that records keystrokes. Type the tool name.",
+    "hint": "It records what a user types, not just what a user sees.",
+    "guide": "The lesson describes a tool that records keystrokes and can capture passwords.",
     "answer": "KEYLOGGER"
   },
   {
@@ -576,12 +576,12 @@ const challenges = [
   {
     "title": "THE TRAFFIC FLOOD",
     "category": "NETWORK ATTACKS",
-    "type": "Pattern Recognition",
+    "type": "Logic / Attack Classification",
     "points": 1,
     "attempts": 3,
-    "question": "Three clues: (1) a service becomes unavailable, (2) traffic comes from many devices, (3) legitimate users cannot connect. Decode the acronym: D _ S. What is the three-letter attack acronym?",
-    "hint": "The middle letter stands for 'istributed'.",
-    "guide": "The PPT describes a denial-of-service attack distributed across multiple sources.",
+    "question": "NETWORK LOG: A website is online, but real users cannot access it. Logs show a huge flood of requests arriving from many compromised devices. It is not one device sending all the traffic. Which attack best fits all clues? Submit the acronym.",
+    "hint": "Look for the denial-of-service attack distributed across multiple sources.",
+    "guide": "The key clue is that traffic comes from many devices.",
     "answer": [
       "DDOS",
       "DDoS",
@@ -595,9 +595,9 @@ const challenges = [
     "type": "Incident Reconstruction",
     "points": 1,
     "attempts": 3,
-    "question": "Two endpoints believe they are communicating directly, but an attacker secretly sits between them and may steal a session token. CTF FLAG: M _ T M. Complete the four-letter acronym.",
-    "hint": "M = Man, I = In, T = The, M = Middle.",
-    "guide": "The attack intercepts communication between two parties.",
+    "question": "RECONSTRUCT THE ATTACK: Alice sends a login request to a server. Mallory secretly intercepts the communication, reads the session token, then forwards the traffic so both sides think the connection is normal. What attack is this? Submit the acronym.",
+    "hint": "The attacker is positioned between two communicating parties.",
+    "guide": "This attack intercepts communication between two endpoints.",
     "answer": [
       "MITM",
       "MAN IN THE MIDDLE",
@@ -635,12 +635,12 @@ const challenges = [
   {
     "title": "THE MINIMUM ACCESS RULE",
     "category": "ACCESS CONTROL",
-    "type": "Policy Investigation",
+    "type": "Access-Control Logic",
     "points": 1,
     "attempts": 3,
-    "question": "A student account needs to upload assignments but must not have administrator access. Give only the minimum permissions required. Name the principle: LEAST OF ________.",
-    "hint": "The missing word begins with PRIV- and means a special right or permission.",
-    "guide": "This principle grants users only the access necessary for their tasks.",
+    "question": "PERMISSION PUZZLE: A student must upload a file to one class folder. They do not need to install software, change users, or access other folders. Which security principle says to grant only the permissions needed for that task? Type the principle name.",
+    "hint": "The principle starts with LEAST and ends with PRIVILEGE.",
+    "guide": "Grant only the access required to perform assigned work.",
     "answer": [
       "LEAST PRIVILEGE",
       "PRINCIPLE OF LEAST PRIVILEGE"
@@ -677,12 +677,12 @@ const challenges = [
   {
     "title": "THE ISMS REQUIREMENTS",
     "category": "STANDARDS",
-    "type": "Analysis",
+    "type": "Standards Deduction",
     "points": 2,
     "attempts": 5,
-    "question": "Solve the clue and identify the security term. Which ISO/IEC standard specifies the requirements for establishing, implementing, maintaining, and improving an Information Security Management System, and can be used for certification?",
-    "hint": "Compare the roles of ISO/IEC 27001 and ISO/IEC 27002.",
-    "guide": "The PPT says this standard defines the ISMS requirements and can be used for certification.",
+    "question": "STANDARD INVESTIGATION: An organization wants a standard that defines the requirements for its Information Security Management System and can be used for certification. ISO/IEC 27002 is control guidance. Which standard should it choose? Submit the standard number.",
+    "hint": "Choose between 27001 and 27002: requirements and certification point to one of them.",
+    "guide": "The PPT distinguishes ISO/IEC 27001 requirements from ISO/IEC 27002 guidance.",
     "answer": [
       "ISO/IEC 27001",
       "ISO IEC 27001",
@@ -707,12 +707,12 @@ const challenges = [
   {
     "title": "THE PHILIPPINE PRIVACY LAW",
     "category": "DATA PRIVACY",
-    "type": "Number Decode",
+    "type": "Number Decode / Context Clue",
     "points": 2,
     "attempts": 3,
-    "question": "The Data Privacy Act was passed in 2012. Fill in the missing digits of its law number: RA 10_73. Submit the full RA number or just the five digits.",
-    "hint": "The missing digit is 1.",
-    "guide": "The Week 7–8 PPT identifies the law as Republic Act 10173.",
+    "question": "LAW FILE: You find the year 2012, the phrase 'Data Privacy Act,' and the partial reference RA 10_73. Use the lesson to identify the missing law number. Submit the complete number only.",
+    "hint": "The law number has five digits; the missing digit is 1.",
+    "guide": "The Week 7–8 PPT identifies the Data Privacy Act of 2012 as RA 10173.",
     "answer": [
       "RA 10173",
       "REPUBLIC ACT 10173",
@@ -723,12 +723,12 @@ const challenges = [
   {
     "title": "THE BREACH DEADLINE",
     "category": "DATA PRIVACY / INCIDENT RESPONSE",
-    "type": "Timed Intelligence",
+    "type": "Timeline Logic",
     "points": 2,
     "attempts": 5,
-    "question": "A qualifying personal-data breach must be reported within the deadline shown in your Week 7–8 lesson. Complete the token: 7_ HOURS. Submit the number of hours.",
-    "hint": "The missing digit is 2. Enter the number only or include HOURS.",
-    "guide": "Use the specific deadline stated in the class PPT.",
+    "question": "INCIDENT TIMELINE: A qualifying personal-data breach is discovered on Monday. Your Week 7–8 lesson states the reporting deadline as 7_ hours. Fill in the missing digit and submit the number of hours only.",
+    "hint": "The number in the lesson is seventy-two.",
+    "guide": "Use the deadline stated in the class PPT.",
     "answer": [
       "72 HOURS",
       "72"
