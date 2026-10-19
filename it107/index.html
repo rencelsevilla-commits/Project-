@@ -749,7 +749,8 @@ let teamName="";
 let teamId="";
 let wrongAttempts=0;
 let totalPenalty=0;
-let skipUsed=false; // Each team gets exactly one skip for the entire CTF.
+let skipCount=0; // Each team gets two skips for the entire CTF.
+const MAX_SKIPS=2;
 
 function maxAttemptsFor(i){ return Number(challenges[i]?.attempts) || 3; }
 function penaltyFor(i){ return Number(challenges[i].points)===2 ? 1 : 0.5; }
@@ -833,7 +834,7 @@ function render(){
   document.getElementById("difficultyHUD").textContent=c.difficulty||'MEDIUM';
   document.getElementById("lockOverlay").style.display="none";
   const skipBtn=document.getElementById("skipBtn");
-  if(skipBtn){skipBtn.disabled=skipUsed || current>=challenges.length-1;skipBtn.textContent=skipUsed?"[ SKIP USED // 0 LEFT ]":"[ SKIP QUESTION // 1 SKIP LEFT ]";}
+  if(skipBtn){skipBtn.disabled=skipCount>=MAX_SKIPS || current>=challenges.length-1;skipBtn.textContent=skipCount>=MAX_SKIPS?"[ SKIPS USED // 0 LEFT ]":"[ SKIP QUESTION // "+(MAX_SKIPS-skipCount)+" SKIP"+(MAX_SKIPS-skipCount===1?"":"S")+" LEFT ]";}
   const sec=document.getElementById("scrambleSection"), scr=document.getElementById("scramble");
   if(c.scramble){
     sec.style.display="block";
@@ -855,8 +856,8 @@ function render(){
 async function skipQuestion(){
   const fb=document.getElementById("feedback");
   const btn=document.getElementById("skipBtn");
-  if(skipUsed){
-    fb.textContent="SKIP DENIED — YOUR TEAM HAS ALREADY USED ITS ONE SKIP.";
+  if(skipCount>=MAX_SKIPS){
+    fb.textContent="SKIP DENIED — YOUR TEAM HAS USED BOTH SKIPS.";
     fb.className="feedback bad";
     return;
   }
@@ -870,8 +871,8 @@ async function skipQuestion(){
   const [skippedSolved]=solved.splice(current,1);
   challenges.push(skippedChallenge);
   solved.push(skippedSolved);
-  skipUsed=true;
-  fb.textContent="CHALLENGE SKIPPED — MOVED TO THE END. You can still answer it when it returns.";
+  skipCount++;
+  fb.textContent="CHALLENGE SKIPPED — MOVED TO THE END. Skips remaining: "+(MAX_SKIPS-skipCount)+". You can still answer it when it returns.";
   fb.className="feedback good";
   await syncTeam("IN PROGRESS");
   render();
@@ -942,7 +943,7 @@ function finish(){
   document.getElementById("quiz").style.display="none"; document.getElementById("complete").style.display="block"; document.getElementById("bar").style.width="100%"; document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 24"; document.getElementById("sideScore").textContent=score.toFixed(1).replace('.0',''); document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 24"; document.getElementById("access").textContent="ALL ACCESS"; updateScoreHUD(); renderMissions(); syncTeam('COMPLETED');
 }
 
-function restart(){ challenges.splice(0,challenges.length,...originalChallengeOrder); current=0;score=0;wrongAttempts=0;totalPenalty=0;skipUsed=false;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
+function restart(){ challenges.splice(0,challenges.length,...originalChallengeOrder); current=0;score=0;wrongAttempts=0;totalPenalty=0;skipCount=0;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
 
 document.addEventListener('DOMContentLoaded',()=>{
   const saved=sessionStorage.getItem('it107_team_name'); if(saved){const i=document.getElementById('teamNameInput');if(i)i.value=saved;}
