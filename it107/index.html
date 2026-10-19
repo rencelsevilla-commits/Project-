@@ -853,12 +853,35 @@ async function submitAnswer(){
 }
 
 function startCTF(){
-  const input=document.getElementById('teamNameInput'); const name=(input?.value||'').trim().replace(/\s+/g,' ');
-  if(!name){ input?.focus(); if(input) input.style.borderColor='#ff6b6b'; return; }
-  if(name.length<2){ input.focus(); input.style.borderColor='#ff6b6b'; return; }
-  input.style.borderColor=''; teamName=name.toUpperCase(); teamId=sessionStorage.getItem('it107_team_id')||makeTeamId(); sessionStorage.setItem('it107_team_id',teamId); sessionStorage.setItem('it107_team_name',teamName);
-  document.getElementById('teamHudName').textContent=teamName; document.getElementById('teamHud').style.display='block';
-  const s=document.getElementById('startScreen'); if(s){s.classList.add('start-hide');setTimeout(()=>{s.style.display='none';},420);} const quiz=document.getElementById('quiz'); if(quiz)quiz.style.display='block'; render(); syncTeam('IN PROGRESS');
+  const input=document.getElementById('teamNameInput');
+  const name=((input && input.value) || '').trim().replace(/\s+/g,' ');
+  if(!name){ if(input){input.focus();input.style.borderColor='#ff6b6b';} return; }
+  if(name.length<2){ if(input){input.focus();input.style.borderColor='#ff6b6b';} return; }
+  if(input) input.style.borderColor='';
+  teamName=name.toUpperCase();
+  try {
+    teamId=sessionStorage.getItem('it107_team_id')||makeTeamId();
+    sessionStorage.setItem('it107_team_id',teamId);
+    sessionStorage.setItem('it107_team_name',teamName);
+  } catch(storageError) {
+    teamId=makeTeamId();
+    console.warn('Session storage unavailable; continuing without saved session.',storageError);
+  }
+  const hudName=document.getElementById('teamHudName');
+  const hud=document.getElementById('teamHud');
+  if(hudName) hudName.textContent=teamName;
+  if(hud) hud.style.display='block';
+  const start=document.getElementById('startScreen');
+  if(start){start.classList.add('start-hide');start.style.display='none';}
+  const quiz=document.getElementById('quiz');
+  if(quiz) quiz.style.display='block';
+  try { render(); updateScoreHUD(); }
+  catch(renderError) {
+    console.error('Unable to render IT 107 challenge:',renderError);
+    const feedback=document.getElementById('feedback');
+    if(feedback){feedback.textContent='Quiz could not load. Please refresh the page and try again.';feedback.className='feedback bad';}
+  }
+  syncTeam('IN PROGRESS');
 }
 
 function finish(){
