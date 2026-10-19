@@ -649,12 +649,12 @@ const challenges = [
   {
     "title": "THE PRIVACY REGULATOR",
     "category": "PHILIPPINE CYBER GOVERNANCE",
-    "type": "Acronym Decode",
+    "type": "Cryptography / ROT13",
     "points": 1,
     "attempts": 3,
-    "question": "NUMBER CODE // Use A=1, B=2, C=3 ... Z=26. Decode 14-16-3 to identify the Philippine agency that regulates compliance with the Data Privacy Act. Submit the three-letter acronym.",
-    "hint": "Convert each number to its matching alphabet letter: 14=N, 16=P, 3=C.",
-    "guide": "The agency is listed in the Week 7–8 lesson on Philippine information-assurance institutions.",
+    "question": "CTF CRYPTO // Decode this ROT13 token: APC. It is the three-letter acronym of the Philippine agency that regulates compliance with the Data Privacy Act. Submit the decoded acronym.",
+    "hint": "ROT13 shifts each letter 13 places. Decode A→N, P→C, C→P.",
+    "guide": "Decode the letters, then check the agency name in the Week 7–8 lesson.",
     "answer": [
       "NPC",
       "NATIONAL PRIVACY COMMISSION"
@@ -663,12 +663,12 @@ const challenges = [
   {
     "title": "THE ACCEPTABLE USE RULES",
     "category": "SECURITY POLICIES",
-    "type": "Missing Letters",
+    "type": "Cryptography / ROT13",
     "points": 1,
     "attempts": 3,
-    "question": "A policy defines what users may and may not do on an organization's systems. Complete the abbreviation: A _ P. Submit the full policy name or its three-letter abbreviation.",
-    "hint": "The missing middle letter is U.",
-    "guide": "The policy's name starts with Acceptable and ends with Policy.",
+    "question": "CTF CRYPTO // Decode this ROT13 token: NHC. The decoded abbreviation names the policy that defines what users may and may not do on an organization’s systems. Submit the abbreviation or full policy name.",
+    "hint": "Use ROT13: N→A, H→U, C→P.",
+    "guide": "Decode the token, then expand the abbreviation into the policy name.",
     "answer": [
       "AUP",
       "ACCEPTABLE USE POLICY"
@@ -692,12 +692,12 @@ const challenges = [
   {
     "title": "THE CONTROL GUIDANCE",
     "category": "STANDARDS",
-    "type": "Reverse Engineering",
+    "type": "Cryptography / ROT13",
     "points": 2,
     "attempts": 3,
-    "question": "Solve the clue and identify the security term. Which ISO/IEC standard provides best-practice guidance for implementing information security controls but is not certifiable on its own?",
-    "hint": "This standard explains the practical 'how' for security controls.",
-    "guide": "The PPT contrasts the requirements standard with the guidance standard.",
+    "question": "CTF CRYPTO // Decode the letters in this ROT13 token: VFB/IEC 27002. Which ISO/IEC standard provides best-practice guidance for implementing information security controls? Submit the standard number.",
+    "hint": "ROT13 changes VFB back to ISO. Keep the number 27002 unchanged.",
+    "guide": "Decode the standard prefix, then identify the guidance standard discussed in the PPT.",
     "answer": [
       "ISO/IEC 27002",
       "ISO IEC 27002",
