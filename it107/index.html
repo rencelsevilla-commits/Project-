@@ -46,8 +46,8 @@ h2{font-size:30px;color:#fff;margin:9px 0 13px;letter-spacing:2px}
 .letter{width:43px;height:43px;border:1px solid #00ff73;background:#03140b;display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;font-weight:bold;box-shadow:0 0 9px rgba(0,255,115,.2)}
 .question{font-size:16px;line-height:1.7;color:#edfff3}
 .answerRow{display:flex;gap:9px;margin-top:16px}
-.skipRow{display:flex;justify-content:flex-end;gap:9px;margin-top:10px}
-.skipBtn{border-color:#ffb52e;color:#ffcf70;background:#171006}.skipBtn:hover{background:#4b3108;color:#fff}.skipBtn:disabled{opacity:.45;cursor:not-allowed}
+.skipRow{display:flex!important;visibility:visible!important;opacity:1!important;justify-content:flex-end;gap:9px;margin-top:12px;position:relative;z-index:10;width:100%}
+.skipBtn{display:inline-block!important;visibility:visible!important;opacity:1!important;min-height:44px;border:2px solid #ffb52e!important;border-color:#ffb52e;color:#ffcf70;background:#171006;position:relative;z-index:11}.skipBtn:hover{background:#4b3108;color:#fff}.skipBtn:disabled{opacity:.45;cursor:not-allowed}
 input{flex:1;min-width:0;background:#010503;border:1px solid #00ff73;color:#fff;padding:14px;font:15px Consolas;outline:none}
 input:focus{box-shadow:0 0 15px rgba(0,255,115,.25)}
 button{border:1px solid #00ff73;background:#03160c;color:#00ff73;padding:13px 18px;font:bold 12px Consolas;cursor:pointer}
@@ -393,7 +393,7 @@ body:has(#matrixRain){overflow-x:hidden}
     <button onclick="submitAnswer()">[ SUBMIT ]</button>
   </div>
   <div class="feedback" id="feedback"></div>
-  <div class="skipRow"><button type="button" id="skipBtn" class="skipBtn" onclick="skipQuestion()">[ SKIP QUESTION // 1 SKIP LEFT ]</button></div>
+  <div class="skipRow"><button type="button" id="skipBtn" class="skipBtn" onclick="skipQuestion()">[ SKIP QUESTION // 2 SKIPS LEFT ]</button></div>
 
   <div class="hint" onclick="toggleHint()">[ ? ] OPEN HINT
     <div class="hintText" id="hint"></div>
