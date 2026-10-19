@@ -524,67 +524,73 @@ const challenges = [
   },
   {
     "title": "THE KEYSTROKE WATCHER",
-    "category": "MALWARE",
-    "type": "Forensics",
+    "category": "MALWARE / DIGITAL FORENSICS",
+    "type": "Evidence Analysis",
     "points": 1,
     "attempts": 3,
     "scramble": "KEGGOYLER",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. A hidden program records every key a user types, including passwords. What type of malicious software is this, and what is the common tool called?",
-    "hint": "The clue mentions secretly watching activity and recording keystrokes.",
-    "guide": "The PPT identifies a keylogger as a common type of this spying malware.",
+    "question": "FORENSIC CLUE: the malware secretly records each key pressed. Complete the tool name: KEY _ _ G E R. What is the tool called?",
+    "hint": "It starts with KEY and ends with GER.",
+    "guide": "The PPT identifies this as a tool that records keystrokes and may steal passwords.",
     "answer": [
-      "SPYWARE",
-      "KEYLOGGER"
+      "KEYLOGGER",
+      "SPYWARE"
     ]
   },
   {
     "title": "THE ENCODED RANSOM",
-    "category": "MALWARE",
+    "category": "CRYPTOGRAPHY / ROT13",
     "type": "Cryptography / ROT13",
     "points": 1,
     "attempts": 3,
-    "scramble": "ARNOSWMAER",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. Decode this ROT13 clue: Enafbzjner. What type of attack holds files or a system hostage and demands payment?",
-    "hint": "Open the ROT13 Guide below the hint and decode the clue.",
-    "guide": "Use the ROT13 letter pairs to decode the word. Then connect it to the malware described in the PPT.",
+    "question": "CTF CRYPTO // Decode this ROT13 token: Ebfjner? No. Use the exact token: Enafbzjner. The decoded word names malware that locks or encrypts files and demands payment. Submit the decoded malware name.",
+    "hint": "ROT13 moves each letter 13 places. Decode E→R, n→a, a→n, f→s, b→o, z→m, j→w, n→a, e→r.",
+    "guide": "Decode the entire token using the ROT13 guide. Do not submit the encoded token.",
     "answer": "RANSOMWARE"
   },
   {
     "title": "THE SILENT OBSERVER",
     "category": "NETWORK ATTACKS",
-    "type": "Analysis",
+    "type": "Evidence Analysis",
     "points": 1,
     "attempts": 3,
     "scramble": "SPAESIV",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. An attacker monitors network traffic and collects information but does not change the data. Is this a passive or active attack?",
-    "hint": "Focus on whether the attacker changes the data.",
-    "guide": "The PPT says one type observes or steals information while leaving data unchanged.",
-    "answer": ["PASSIVE", "PASSIVE ATTACK"]
+    "question": "PACKET LOG: an intruder captures and reads traffic but does not alter, delete, or disrupt the data. Complete the two-word classification: PASSIVE ______. Submit the full attack type.",
+    "hint": "The missing word is the same category name used for a deliberate attempt to violate security.",
+    "guide": "The lesson contrasts attacks that only observe information with attacks that change data.",
+    "answer": [
+      "PASSIVE ATTACK",
+      "PASSIVE"
+    ]
   },
   {
     "title": "THE DATA CHANGER",
     "category": "NETWORK ATTACKS",
-    "type": "Analysis",
+    "type": "Evidence Analysis",
     "points": 1,
     "attempts": 3,
     "scramble": "EVITCA",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. An attacker gains unauthorized access and then modifies, deletes, or encrypts data. Is this a passive or active attack?",
-    "hint": "Focus on the attacker's effect on the data.",
-    "guide": "If the attacker changes or damages data, use the other main attack category.",
-    "answer": ["ACTIVE", "ACTIVE ATTACK"]
+    "question": "INCIDENT LOG: files were modified and then encrypted by an intruder. Complete the classification: ______ ATTACK. Submit the missing word or the full two-word term.",
+    "hint": "It is the opposite of PASSIVE.",
+    "guide": "If an attacker changes or damages data, the attack is active.",
+    "answer": [
+      "ACTIVE",
+      "ACTIVE ATTACK"
+    ]
   },
   {
     "title": "THE TRAFFIC FLOOD",
     "category": "NETWORK ATTACKS",
-    "type": "Forensics",
+    "type": "Pattern Recognition",
     "points": 1,
     "attempts": 3,
     "scramble": "SODD",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. A service is flooded with a large amount of traffic from multiple sources until legitimate users cannot access it. What kind of attack is this?",
-    "hint": "The goal is to disrupt or deny normal service.",
+    "question": "Three clues: (1) a service becomes unavailable, (2) traffic comes from many devices, (3) legitimate users cannot connect. Decode the acronym: D _ S. What is the three-letter attack acronym?",
+    "hint": "The middle letter stands for 'istributed'.",
     "guide": "The PPT describes a denial-of-service attack distributed across multiple sources.",
     "answer": [
       "DDOS",
+      "DDoS",
       "DISTRIBUTED DENIAL OF SERVICE",
       "DISTRIBUTED DENIAL-OF-SERVICE"
     ]
@@ -592,17 +598,17 @@ const challenges = [
   {
     "title": "THE INTERCEPTED SESSION",
     "category": "NETWORK ATTACKS",
-    "type": "Analysis",
+    "type": "Incident Reconstruction",
     "points": 1,
     "attempts": 3,
     "scramble": "MTIM",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. An attacker secretly intercepts communication between a user and a website and may steal a session token. What attack is described?",
-    "hint": "Think of an attacker positioned between two communicating parties.",
-    "guide": "The PPT discusses intercepting traffic and session or cookie hijacking.",
+    "question": "Two endpoints believe they are communicating directly, but an attacker secretly sits between them and may steal a session token. CTF FLAG: M _ T M. Complete the four-letter acronym.",
+    "hint": "M = Man, I = In, T = The, M = Middle.",
+    "guide": "The attack intercepts communication between two parties.",
     "answer": [
+      "MITM",
       "MAN IN THE MIDDLE",
       "MAN-IN-THE-MIDDLE",
-      "MITM",
       "MAN IN THE MIDDLE ATTACK"
     ]
   },
@@ -624,25 +630,25 @@ const challenges = [
   {
     "title": "THE FAKE MESSAGE",
     "category": "SOCIAL ENGINEERING",
-    "type": "Forensics",
+    "type": "Social Engineering",
     "points": 1,
     "attempts": 3,
     "scramble": "GNIHSIHP",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. A message pretends to come from a trusted bank and sends the victim to a fake login page to steal credentials. What attack is this?",
-    "hint": "The message tries to trick the user into clicking a link or sharing credentials.",
-    "guide": "The PPT describes fake legitimate-looking messages that steal login information.",
+    "question": "SOCIAL ENGINEERING CASE: a text message claims your bank account will be blocked unless you click a link immediately. The link opens a fake login page. Name the general attack that tricks people into revealing credentials (not the SMS-specific subtype).",
+    "hint": "The broad term begins with PHISH-; SMS phishing is a subtype.",
+    "guide": "The PPT defines this as fake, trusted-looking messages or pages used to steal login details.",
     "answer": "PHISHING"
   },
   {
     "title": "THE MINIMUM ACCESS RULE",
-    "category": "PREVENTION",
-    "type": "Analysis",
+    "category": "ACCESS CONTROL",
+    "type": "Policy Investigation",
     "points": 1,
     "attempts": 3,
     "scramble": "SLLGEATPRIEVIE",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. A student account should receive only the access needed to complete its tasks, not full administrator rights. What security principle is this?",
-    "hint": "Think about giving users the minimum access necessary.",
-    "guide": "The PPT calls this principle the least privilege.",
+    "question": "A student account needs to upload assignments but must not have administrator access. Give only the minimum permissions required. Name the principle: LEAST OF ________.",
+    "hint": "The missing word begins with PRIV- and means a special right or permission.",
+    "guide": "This principle grants users only the access necessary for their tasks.",
     "answer": [
       "LEAST PRIVILEGE",
       "PRINCIPLE OF LEAST PRIVILEGE"
@@ -650,32 +656,32 @@ const challenges = [
   },
   {
     "title": "THE PRIVACY REGULATOR",
-    "category": "GOVERNANCE",
-    "type": "Forensics",
+    "category": "PHILIPPINE CYBER GOVERNANCE",
+    "type": "Acronym Decode",
     "points": 1,
     "attempts": 3,
     "scramble": "CPN",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. Which Philippine agency regulates compliance with the Data Privacy Act of 2012?",
-    "hint": "Look for the agency whose name includes Privacy Commission.",
-    "guide": "The Week 7–8 PPT lists Philippine agencies and their information-assurance roles.",
+    "question": "Decode the agency initials from this clue: NATIONAL + PRIVACY + COMMISSION. Submit the official three-letter acronym that regulates compliance with the Data Privacy Act.",
+    "hint": "Take the first letter of each word in the agency's name.",
+    "guide": "The agency is listed in the Week 7–8 lesson on Philippine information-assurance institutions.",
     "answer": [
-      "NATIONAL PRIVACY COMMISSION",
-      "NPC"
+      "NPC",
+      "NATIONAL PRIVACY COMMISSION"
     ]
   },
   {
     "title": "THE ACCEPTABLE USE RULES",
     "category": "SECURITY POLICIES",
-    "type": "Analysis",
+    "type": "Missing Letters",
     "points": 1,
     "attempts": 3,
     "scramble": "PUA",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. An organization needs a policy that defines which activities users are permitted to perform on company systems. What policy should it use?",
-    "hint": "The policy name is commonly shortened to three letters.",
-    "guide": "The PPT lists this policy under examples of key security policies.",
+    "question": "A policy defines what users may and may not do on an organization's systems. Complete the abbreviation: A _ P. Submit the full policy name or its three-letter abbreviation.",
+    "hint": "The missing middle letter is U.",
+    "guide": "The policy's name starts with Acceptable and ends with Policy.",
     "answer": [
-      "ACCEPTABLE USE POLICY",
-      "AUP"
+      "AUP",
+      "ACCEPTABLE USE POLICY"
     ]
   },
   {
@@ -713,13 +719,13 @@ const challenges = [
   {
     "title": "THE PHILIPPINE PRIVACY LAW",
     "category": "DATA PRIVACY",
-    "type": "Analysis",
+    "type": "Number Decode",
     "points": 2,
     "attempts": 3,
     "scramble": "0RA3117",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. What is the Republic Act number of the Philippine Data Privacy Act of 2012?",
-    "hint": "Recall the law number shown in the Week 7–8 PPT.",
-    "guide": "The PPT labels the law with 'RA' followed by a five-digit number.",
+    "question": "The Data Privacy Act was passed in 2012. Fill in the missing digits of its law number: RA 10_73. Submit the full RA number or just the five digits.",
+    "hint": "The missing digit is 1.",
+    "guide": "The Week 7–8 PPT identifies the law as Republic Act 10173.",
     "answer": [
       "RA 10173",
       "REPUBLIC ACT 10173",
@@ -729,14 +735,14 @@ const challenges = [
   },
   {
     "title": "THE BREACH DEADLINE",
-    "category": "DATA PRIVACY",
-    "type": "Forensics",
+    "category": "DATA PRIVACY / INCIDENT RESPONSE",
+    "type": "Timed Intelligence",
     "points": 2,
     "attempts": 5,
     "scramble": "O72SHUR",
-    "question": "Solve the clue, then unscramble the letters shown to complete the security term. According to the Week 7–8 PPT, a qualifying personal-data breach must be reported to the National Privacy Commission within how many hours upon knowledge of the breach?",
-    "hint": "The slide gives a specific number of hours, not days.",
-    "guide": "Check the PPT section on Section 20(f), Data Breach Notification.",
+    "question": "A qualifying personal-data breach must be reported within the deadline shown in your Week 7–8 lesson. Complete the token: 7_ HOURS. Submit the number of hours.",
+    "hint": "The missing digit is 2. Enter the number only or include HOURS.",
+    "guide": "Use the specific deadline stated in the class PPT.",
     "answer": [
       "72 HOURS",
       "72"
