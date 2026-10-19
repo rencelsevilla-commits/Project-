@@ -46,6 +46,8 @@ h2{font-size:30px;color:#fff;margin:9px 0 13px;letter-spacing:2px}
 .letter{width:43px;height:43px;border:1px solid #00ff73;background:#03140b;display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;font-weight:bold;box-shadow:0 0 9px rgba(0,255,115,.2)}
 .question{font-size:16px;line-height:1.7;color:#edfff3}
 .answerRow{display:flex;gap:9px;margin-top:16px}
+.skipRow{display:flex;justify-content:flex-end;gap:9px;margin-top:10px}
+.skipBtn{border-color:#ffb52e;color:#ffcf70;background:#171006}.skipBtn:hover{background:#4b3108;color:#fff}.skipBtn:disabled{opacity:.45;cursor:not-allowed}
 input{flex:1;min-width:0;background:#010503;border:1px solid #00ff73;color:#fff;padding:14px;font:15px Consolas;outline:none}
 input:focus{box-shadow:0 0 15px rgba(0,255,115,.25)}
 button{border:1px solid #00ff73;background:#03160c;color:#00ff73;padding:13px 18px;font:bold 12px Consolas;cursor:pointer}
@@ -391,6 +393,7 @@ body:has(#matrixRain){overflow-x:hidden}
     <button onclick="submitAnswer()">[ SUBMIT ]</button>
   </div>
   <div class="feedback" id="feedback"></div>
+  <div class="skipRow"><button type="button" id="skipBtn" class="skipBtn" onclick="skipQuestion()">[ SKIP QUESTION // 1 SKIP LEFT ]</button></div>
 
   <div class="hint" onclick="toggleHint()">[ ? ] OPEN HINT
     <div class="hintText" id="hint"></div>
@@ -745,9 +748,9 @@ let teamName="";
 let teamId="";
 let wrongAttempts=0;
 let totalPenalty=0;
+let skipUsed=false; // Each team gets exactly one skip for the entire CTF.
 
-const specialFiveAttempt=new Set([16,19]);
-function maxAttemptsFor(i){ return specialFiveAttempt.has(i) ? 5 : 3; }
+function maxAttemptsFor(i){ return Number(challenges[i]?.attempts) || 3; }
 function penaltyFor(i){ return Number(challenges[i].points)===2 ? 1 : 0.5; }
 function norm(v){ return String(v??"").toLowerCase().trim().replace(/[“”"'`]/g,"").replace(/\s+/g," "); }
 function makeTeamId(){
@@ -828,6 +831,8 @@ function render(){
   document.getElementById("attemptBadge").className="attemptBadge";
   document.getElementById("difficultyHUD").textContent=c.difficulty||'MEDIUM';
   document.getElementById("lockOverlay").style.display="none";
+  const skipBtn=document.getElementById("skipBtn");
+  if(skipBtn){skipBtn.disabled=skipUsed || current>=challenges.length-1;skipBtn.textContent=skipUsed?"[ SKIP USED // 0 LEFT ]":"[ SKIP QUESTION // 1 SKIP LEFT ]";}
   const sec=document.getElementById("scrambleSection"), scr=document.getElementById("scramble");
   if(c.scramble){
     sec.style.display="block";
@@ -844,6 +849,31 @@ function render(){
   }
   updateScoreHUD(); renderMissions(); document.getElementById("answer").focus();
   syncTeam('IN PROGRESS');
+}
+
+async function skipQuestion(){
+  const fb=document.getElementById("feedback");
+  const btn=document.getElementById("skipBtn");
+  if(skipUsed){
+    fb.textContent="SKIP DENIED — YOUR TEAM HAS ALREADY USED ITS ONE SKIP.";
+    fb.className="feedback bad";
+    return;
+  }
+  if(current>=challenges.length-1){
+    fb.textContent="SKIP UNAVAILABLE — THIS IS THE LAST CHALLENGE.";
+    fb.className="feedback bad";
+    return;
+  }
+  // Move the current unanswered challenge and its solved flag to the end of the queue.
+  const [skippedChallenge]=challenges.splice(current,1);
+  const [skippedSolved]=solved.splice(current,1);
+  challenges.push(skippedChallenge);
+  solved.push(skippedSolved);
+  skipUsed=true;
+  fb.textContent="CHALLENGE SKIPPED — MOVED TO THE END. You can still answer it when it returns.";
+  fb.className="feedback good";
+  await syncTeam("IN PROGRESS");
+  render();
 }
 
 async function submitAnswer(){
@@ -911,7 +941,7 @@ function finish(){
   document.getElementById("quiz").style.display="none"; document.getElementById("complete").style.display="block"; document.getElementById("bar").style.width="100%"; document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 24"; document.getElementById("sideScore").textContent=score.toFixed(1).replace('.0',''); document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 24"; document.getElementById("access").textContent="ALL ACCESS"; updateScoreHUD(); renderMissions(); syncTeam('COMPLETED');
 }
 
-function restart(){ current=0;score=0;wrongAttempts=0;totalPenalty=0;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
+function restart(){ current=0;score=0;wrongAttempts=0;totalPenalty=0;skipUsed=false;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
 
 document.addEventListener('DOMContentLoaded',()=>{
   const saved=sessionStorage.getItem('it107_team_name'); if(saved){const i=document.getElementById('teamNameInput');if(i)i.value=saved;}
