@@ -378,7 +378,7 @@ body:has(#matrixRain){overflow-x:hidden}
   <div class="label">SCENARIO // EVIDENCE</div>
   <div class="scenario" id="scenario"></div>
 
-  <div id="scrambleSection">
+  <div id="scrambleSection" style="display:none">
     <div class="label">SCRAMBLED DATA</div>
     <div class="scrambleBox" id="scramble"></div>
   </div>
@@ -829,8 +829,19 @@ function render(){
   document.getElementById("difficultyHUD").textContent=c.difficulty||'MEDIUM';
   document.getElementById("lockOverlay").style.display="none";
   const sec=document.getElementById("scrambleSection"), scr=document.getElementById("scramble");
-  if(c.scramble){ sec.style.display="block"; scr.innerHTML=""; c.scramble.replace(/\s/g,'').split('').forEach(ch=>{const x=document.createElement('div');x.className='letter';x.textContent=ch;scr.appendChild(x);}); }
-  else sec.style.display="none";
+  if(c.scramble){
+    sec.style.display="block";
+    scr.innerHTML="";
+    c.scramble.replace(/\s/g,'').split('').forEach(ch=>{
+      const x=document.createElement('div');
+      x.className='letter';
+      x.textContent=ch;
+      scr.appendChild(x);
+    });
+  } else {
+    sec.style.display="none";
+    scr.innerHTML="";
+  }
   updateScoreHUD(); renderMissions(); document.getElementById("answer").focus();
   syncTeam('IN PROGRESS');
 }
