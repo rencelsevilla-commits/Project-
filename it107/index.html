@@ -46,6 +46,10 @@ h2{font-size:30px;color:#fff;margin:9px 0 13px;letter-spacing:2px}
 .letter{width:43px;height:43px;border:1px solid #00ff73;background:#03140b;display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;font-weight:bold;box-shadow:0 0 9px rgba(0,255,115,.2)}
 .question{font-size:16px;line-height:1.7;color:#edfff3}
 .answerRow{display:flex;gap:9px;margin-top:16px}
+.chanceRow{display:flex;justify-content:flex-end;gap:9px;margin-top:10px;flex-wrap:wrap}
+.chanceBtn{display:inline-block!important;min-height:44px;border:2px solid #00dfff!important;color:#8beeff;background:#03131a}
+.chanceBtn:hover{background:#064253;color:#fff}.chanceBtn:disabled{opacity:.45;cursor:not-allowed}
+.chanceInfo{display:none;margin-top:9px;padding:12px;border:1px dashed #00dfff;background:rgba(0,216,255,.05);color:#b9f5ff;font-size:12px;line-height:1.7;white-space:pre-line}
 .skipRow{display:flex!important;visibility:visible!important;opacity:1!important;justify-content:flex-end;gap:9px;margin-top:12px;position:relative;z-index:10;width:100%}
 .skipBtn{display:inline-block!important;visibility:visible!important;opacity:1!important;min-height:44px;border:2px solid #ffb52e!important;border-color:#ffb52e;color:#ffcf70;background:#171006;position:relative;z-index:11}.skipBtn:hover{background:#4b3108;color:#fff}.skipBtn:disabled{opacity:.45;cursor:not-allowed}
 input{flex:1;min-width:0;background:#010503;border:1px solid #00ff73;color:#fff;padding:14px;font:15px Consolas;outline:none}
@@ -393,6 +397,8 @@ body:has(#matrixRain){overflow-x:hidden}
     <button onclick="submitAnswer()">[ SUBMIT ]</button>
   </div>
   <div class="feedback" id="feedback"></div>
+  <div class="chanceRow"><button type="button" id="chanceBtn" class="chanceBtn" onclick="useChance()">[ CHANCE // 2 LEFT ]</button></div>
+  <div id="chanceInfo" class="chanceInfo"></div>
   <div class="skipRow"><button type="button" id="skipBtn" class="skipBtn" onclick="skipQuestion()">[ SKIP QUESTION // 2 SKIPS LEFT ]</button></div>
 
   <div class="hint" onclick="toggleHint()">[ ? ] OPEN HINT
@@ -751,6 +757,8 @@ let wrongAttempts=0;
 let totalPenalty=0;
 let skipCount=0; // Each team gets two skips for the entire CTF.
 const MAX_SKIPS=2;
+let chanceCount=0; // Each team gets two answer clues for the entire CTF.
+const MAX_CHANCES=2;
 
 function maxAttemptsFor(i){ return Number(challenges[i]?.attempts) || 3; }
 function penaltyFor(i){ return Number(challenges[i].points)===2 ? 1 : 0.5; }
@@ -835,6 +843,10 @@ function render(){
   document.getElementById("lockOverlay").style.display="none";
   const skipBtn=document.getElementById("skipBtn");
   if(skipBtn){skipBtn.disabled=skipCount>=MAX_SKIPS || current>=challenges.length-1;skipBtn.textContent=skipCount>=MAX_SKIPS?"[ SKIPS USED // 0 LEFT ]":"[ SKIP QUESTION // "+(MAX_SKIPS-skipCount)+" SKIP"+(MAX_SKIPS-skipCount===1?"":"S")+" LEFT ]";}
+  const chanceBtn=document.getElementById("chanceBtn");
+  const chanceInfo=document.getElementById("chanceInfo");
+  if(chanceBtn){chanceBtn.disabled=chanceCount>=MAX_CHANCES;chanceBtn.textContent=chanceCount>=MAX_CHANCES?"[ CHANCES USED // 0 LEFT ]":"[ CHANCE // "+(MAX_CHANCES-chanceCount)+" LEFT ]";}
+  if(chanceInfo){chanceInfo.style.display="none";chanceInfo.textContent="";}
   const sec=document.getElementById("scrambleSection"), scr=document.getElementById("scramble");
   if(c.scramble){
     sec.style.display="block";
@@ -851,6 +863,33 @@ function render(){
   }
   updateScoreHUD(); renderMissions(); document.getElementById("answer").focus();
   syncTeam('IN PROGRESS');
+}
+
+function useChance(){
+  const btn=document.getElementById("chanceBtn");
+  const info=document.getElementById("chanceInfo");
+  const fb=document.getElementById("feedback");
+  if(chanceCount>=MAX_CHANCES){
+    if(fb){fb.textContent="CHANCE DENIED — BOTH CLUES HAVE BEEN USED.";fb.className="feedback bad";}
+    return;
+  }
+  const c=challenges[current];
+  const accepted=Array.isArray(c.answer)?c.answer[0]:c.answer;
+  const answerText=String(accepted??"").trim();
+  const letters=answerText.replace(/[^a-z0-9]/gi,"");
+  const words=answerText.split(/\s+/).filter(Boolean);
+  if(!letters.length){
+    if(fb){fb.textContent="CHANCE UNAVAILABLE FOR THIS QUESTION.";fb.className="feedback bad";}
+    return;
+  }
+  chanceCount++;
+  const first=letters.charAt(0);
+  const last=letters.charAt(letters.length-1);
+  info.textContent="ANSWER CLUE // CHANCE USED\nWord count: "+words.length+"\nLetter count (excluding spaces and symbols): "+letters.length+"\nFirst letter: "+first+"\nLast letter: "+last+"\n\nThis clue does not reveal the full answer.";
+  info.style.display="block";
+  btn.disabled=chanceCount>=MAX_CHANCES;
+  btn.textContent=chanceCount>=MAX_CHANCES?"[ CHANCES USED // 0 LEFT ]":"[ CHANCE // "+(MAX_CHANCES-chanceCount)+" LEFT ]";
+  if(fb){fb.textContent="CLUE UNLOCKED — "+(MAX_CHANCES-chanceCount)+" chance(s) remaining.";fb.className="feedback good";}
 }
 
 async function skipQuestion(){
@@ -943,7 +982,7 @@ function finish(){
   document.getElementById("quiz").style.display="none"; document.getElementById("complete").style.display="block"; document.getElementById("bar").style.width="100%"; document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 24"; document.getElementById("sideScore").textContent=score.toFixed(1).replace('.0',''); document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 24"; document.getElementById("access").textContent="ALL ACCESS"; updateScoreHUD(); renderMissions(); syncTeam('COMPLETED');
 }
 
-function restart(){ challenges.splice(0,challenges.length,...originalChallengeOrder); current=0;score=0;wrongAttempts=0;totalPenalty=0;skipCount=0;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
+function restart(){ challenges.splice(0,challenges.length,...originalChallengeOrder); current=0;score=0;wrongAttempts=0;totalPenalty=0;skipCount=0;chanceCount=0;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
 
 document.addEventListener('DOMContentLoaded',()=>{
   const saved=sessionStorage.getItem('it107_team_name'); if(saved){const i=document.getElementById('teamNameInput');if(i)i.value=saved;}
