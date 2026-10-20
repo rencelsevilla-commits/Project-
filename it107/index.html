@@ -353,12 +353,12 @@ body:has(#matrixRain){overflow-x:hidden}
 
 <div class="layout">
 <aside class="panel">
-  <div class="panelTitle">MISSION LIST // 20</div>
+  <div class="panelTitle">MISSION LIST // 21</div>
   <div class="missions" id="missions"></div>
   <div class="progress">
     <div style="font-size:10px;color:#6c9279">OVERALL PROGRESS</div>
     <div class="track"><div class="bar" id="bar"></div></div>
-    <div class="score" id="score">0 / 24</div>
+    <div class="score" id="score">0 / 25</div>
   </div>
   <div class="scorePanel">
     <div class="scoreLabel">LIVE SCORE</div>
@@ -459,7 +459,7 @@ body:has(#matrixRain){overflow-x:hidden}
     TARGET: <b>KNOWLEDGE</b><br>
     MODE: <b>CTF QUIZ</b><br>
     ACCESS: <b id="access">LEVEL 01</b><br>
-    SCORE: <b id="rscore">0 / 24</b><br>
+    SCORE: <b id="rscore">0 / 25</b><br>
     CONNECTION: <b>ESTABLISHED</b>
   </div>
 </aside>
@@ -743,6 +743,22 @@ const challenges = [
       "72"
     ]
   }
+  {
+    "title": "THE STEP-BY-STEP RESPONSE",
+    "category": "SECURITY POLICIES / PROCEDURES",
+    "type": "Scenario Analysis",
+    "points": 1,
+    "attempts": 3,
+    "question": "POLICY DESK: A university has a security policy that says suspected incidents must be reported. Staff also need a clear, ordered set of steps explaining exactly how to report and document an incident. What type of document provides these step-by-step instructions?",
+    "hint": "Choose the document that explains how to carry out a task, step by step.",
+    "guide": "Policies state rules or direction; procedures describe the steps to follow.",
+    "answer": [
+      "PROCEDURE",
+      "PROCEDURES",
+      "SECURITY PROCEDURE",
+      "SECURITY PROCEDURES"
+    ]
+  }
 ];
 
 const originalChallengeOrder = challenges.slice();
@@ -780,7 +796,7 @@ async function syncTeam(status='IN PROGRESS'){
     team_id:teamId,
     team_name:teamName,
     score:Number(score.toFixed(1)),
-    max_score:24,
+    max_score:25,
     wrong_attempts:wrongAttempts,
     penalty:Number(totalPenalty.toFixed(1)),
     solved:solved.filter(Boolean).length,
@@ -794,11 +810,11 @@ async function syncTeam(status='IN PROGRESS'){
 }
 
 function updateScoreHUD(){
-  document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 24";
+  document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 25";
   document.getElementById("sideScore").textContent=score.toFixed(1).replace('.0','');
   document.getElementById("solved").textContent=solved.filter(Boolean).length;
   document.getElementById("remaining").textContent=challenges.length-solved.filter(Boolean).length;
-  document.getElementById("xp").style.width=Math.min(100,(score/24)*100)+"%";
+  document.getElementById("xp").style.width=Math.min(100,(score/25)*100)+"%";
   document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 24";
   let rank="ROOKIE";
   if(score>=21) rank="SECURITY ELITE";
@@ -821,7 +837,7 @@ function renderMissions(){
 function render(){
   const c=challenges[current]; attempts=maxAttemptsFor(current);
   document.getElementById("quiz").style.display="block"; document.getElementById("complete").style.display="none";
-  document.getElementById("num").textContent="CHALLENGE "+String(current+1).padStart(2,'0')+" / 20";
+  document.getElementById("num").textContent="CHALLENGE "+String(current+1).padStart(2,'0')+" / 21";
   document.getElementById("cat").textContent=(c.category||c.cat)+"  |  TYPE: "+c.type+"  |  DIFFICULTY: "+(c.difficulty||'MEDIUM');
   document.getElementById("title").textContent=c.title;
   document.getElementById("scenario").textContent=c.scenario||"Analyze the evidence and identify the correct Information Assurance and Security I concept.";
@@ -834,7 +850,7 @@ function render(){
   document.getElementById("answer").value=""; document.getElementById("answer").disabled=false;
   document.querySelector(".answerRow button").disabled=false;
   document.getElementById("feedback").textContent=""; document.getElementById("feedback").className="feedback";
-  document.getElementById("bar").style.width=((current)/20*100)+"%";
+  document.getElementById("bar").style.width=((current)/21*100)+"%";
   document.getElementById("access").textContent="LEVEL "+String(current+1).padStart(2,'0');
   document.getElementById("itemPoints").textContent=c.points;
   document.getElementById("attempts").textContent=attempts; document.getElementById("maxAttempts").textContent=maxAttemptsFor(current);
@@ -923,7 +939,7 @@ async function submitAnswer(){
   const answers=Array.isArray(c.answer)?c.answer:[c.answer];
   const accepted=answers.map(norm).includes(value);
   if(accepted){
-    const earned=Number(c.points); score=Math.min(24,score+earned); solved[current]=true;
+    const earned=Number(c.points); score=Math.min(25,score+earned); solved[current]=true;
     fb.textContent="ACCESS GRANTED — CORRECT. +"+earned+" POINT"+(earned>1?'S':'')+" // NEXT LEVEL UNLOCKED."; fb.className="feedback good";
     input.disabled=true; submit.disabled=true; updateScoreHUD(); renderMissions();
     await syncTeam(current===challenges.length-1?'COMPLETED':'IN PROGRESS');
