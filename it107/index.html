@@ -815,7 +815,7 @@ function updateScoreHUD(){
   document.getElementById("solved").textContent=solved.filter(Boolean).length;
   document.getElementById("remaining").textContent=challenges.length-solved.filter(Boolean).length;
   document.getElementById("xp").style.width=Math.min(100,(score/25)*100)+"%";
-  document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 24";
+  document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 25";
   let rank="ROOKIE";
   if(score>=21) rank="SECURITY ELITE";
   else if(score>=16) rank="THREAT HUNTER";
@@ -995,7 +995,7 @@ function startCTF(){
 }
 
 function finish(){
-  document.getElementById("quiz").style.display="none"; document.getElementById("complete").style.display="block"; document.getElementById("bar").style.width="100%"; document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 24"; document.getElementById("sideScore").textContent=score.toFixed(1).replace('.0',''); document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 24"; document.getElementById("access").textContent="ALL ACCESS"; updateScoreHUD(); renderMissions(); syncTeam('COMPLETED');
+  document.getElementById("quiz").style.display="none"; document.getElementById("complete").style.display="block"; document.getElementById("bar").style.width="100%"; document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 25"; document.getElementById("sideScore").textContent=score.toFixed(1).replace('.0',''); document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 25"; document.getElementById("access").textContent="ALL ACCESS"; updateScoreHUD(); renderMissions(); syncTeam('COMPLETED');
 }
 
 function restart(){ challenges.splice(0,challenges.length,...originalChallengeOrder); current=0;score=0;wrongAttempts=0;totalPenalty=0;skipCount=0;chanceCount=0;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
