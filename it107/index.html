@@ -915,6 +915,39 @@ function renderMissions(){
   });
 }
 
+function makeScrambledLetters(challenge){
+  const raw=Array.isArray(challenge.answer)?challenge.answer[0]:challenge.answer;
+  const letters=String(raw||"").replace(/[^a-z0-9]/gi,"").toUpperCase().split("");
+  if(letters.length<2) return letters.join("");
+  // Deterministic per team and challenge so refreshes keep the same puzzle.
+  const seedText=(teamName||"DEFAULT TEAM")+"|"+String(challenge.title||"");
+  let seed=2166136261;
+  for(let i=0;i<seedText.length;i++){
+    seed^=seedText.charCodeAt(i);
+    seed=Math.imul(seed,16777619)>>>0;
+  }
+  const original=letters.join("");
+  const reversed=letters.slice().reverse().join("");
+  let result=original;
+  for(let attempt=0;attempt<30;attempt++){
+    const shuffled=letters.slice();
+    for(let i=shuffled.length-1;i>0;i--){
+      seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+      const j=seed%(i+1);
+      [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
+    }
+    result=shuffled.join("");
+    if(result!==original && result!==reversed) break;
+  }
+  // Fallback for very short/repetitive words if random shuffles don't produce a different arrangement.
+  if(result===original || result===reversed){
+    const first=letters.shift();
+    letters.push(first);
+    result=letters.join("");
+  }
+  return result;
+}
+
 function render(){
   const c=challenges[current]; attempts=maxAttemptsFor(current);
   document.getElementById("quiz").style.display="block"; document.getElementById("complete").style.display="none";
@@ -948,7 +981,7 @@ function render(){
   if(c.scramble){
     sec.style.display="block";
     scr.innerHTML="";
-    c.scramble.replace(/\s/g,'').split('').forEach(ch=>{
+    makeScrambledLetters(c).split('').forEach(ch=>{
       const x=document.createElement('div');
       x.className='letter';
       x.textContent=ch;
