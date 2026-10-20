@@ -817,6 +817,8 @@ let teamName="";
 let teamId="";
 let wrongAttempts=0;
 let totalPenalty=0;
+let tabViolations=0;
+let isCTFLocked=false;
 let skipCount=0; // Each team gets two skips for the entire CTF.
 const MAX_SKIPS=2;
 let chanceCount=0; // Each team gets two answer clues for the entire CTF.
@@ -847,6 +849,8 @@ async function syncTeam(status='IN PROGRESS'){
     penalty:Number(totalPenalty.toFixed(1)),
     solved:solved.filter(Boolean).length,
     total_challenges:challenges.length,
+    tab_violations:tabViolations,
+    is_locked:isCTFLocked,
     current_challenge:Math.min(current+1,challenges.length),
     status,
     updated_at:new Date().toISOString()
@@ -928,6 +932,7 @@ function render(){
 }
 
 function useChance(){
+  if(isCTFLocked){lockCTFForTabViolation();return;}
   if(ctfTimeExpired()){lockCTFForTime();return;}
   const btn=document.getElementById("chanceBtn");
   const info=document.getElementById("chanceInfo");
@@ -956,6 +961,7 @@ function useChance(){
 }
 
 async function skipQuestion(){
+  if(isCTFLocked){lockCTFForTabViolation();return;}
   if(ctfTimeExpired()){lockCTFForTime();return;}
   const fb=document.getElementById("feedback");
   const btn=document.getElementById("skipBtn");
@@ -982,6 +988,7 @@ async function skipQuestion(){
 }
 
 async function submitAnswer(){
+  if(isCTFLocked){lockCTFForTabViolation();return;}
   if(ctfTimeExpired()){lockCTFForTime();return;}
   const c=challenges[current], value=norm(document.getElementById("answer").value), fb=document.getElementById("feedback"), panel=document.getElementById("mainPanel"), submit=document.querySelector(".answerRow button"), input=document.getElementById("answer");
   if(!value){ fb.textContent="ACCESS DENIED — ENTER AN ANSWER FIRST."; fb.className="feedback bad"; input.focus(); return; }
@@ -1015,6 +1022,7 @@ async function submitAnswer(){
 const CTF_DURATION_MS = 60 * 60 * 1000;
 let ctfTimerInterval = null;
 function lockCTFForTime(){
+  isCTFLocked=true;
   const overlay=document.getElementById('lockOverlay');
   if(overlay){
     overlay.style.display='flex';
@@ -1059,6 +1067,40 @@ function ctfTimeExpired(){
   return startedAt>0 && Date.now()-startedAt>=CTF_DURATION_MS;
 }
 
+
+function lockCTFForTabViolation(){
+  isCTFLocked=true;
+  const overlay=document.getElementById('lockOverlay');
+  if(overlay){
+    overlay.style.display='flex';
+    const title=overlay.querySelector('h3'), message=overlay.querySelector('p'), admin=overlay.querySelector('.rank');
+    if(title)title.textContent='CTF LOCKED — TAB VIOLATIONS';
+    if(message)message.textContent='Your team reached 3 tab-switch violations. Your CTF session is locked. Please contact your instructor.';
+    if(admin)admin.textContent='ADMIN MESSAGE: TAB-SWITCH LIMIT REACHED';
+  }
+  ['answer','skipBtn','chanceBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true;});
+  const submit=document.querySelector('.answerRow button');if(submit)submit.disabled=true;
+  syncTeam('LOCKED - TAB VIOLATIONS');
+}
+function recordTabSwitch(){
+  if(!teamId || !teamName || isCTFLocked || ctfTimeExpired())return;
+  tabViolations++;
+  try{sessionStorage.setItem('it107_tab_violations',String(tabViolations));}catch(e){}
+  const feedback=document.getElementById('feedback');
+  if(tabViolations>=3){lockCTFForTabViolation();return;}
+  if(feedback){
+    feedback.textContent='TAB-SWITCH WARNING '+tabViolations+'/3 — Stay on the CTF page. At 3 violations, your team will be locked.';
+    feedback.className='feedback bad';
+  }
+  syncTeam('WARNING - TAB SWITCH '+tabViolations+'/3');
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden')recordTabSwitch();
+});
+window.addEventListener('blur',()=>{
+  // Blur can happen for browser chrome or dialogs; visibilitychange is the main signal.
+});
+
 function startCTF(){
   const input=document.getElementById('teamNameInput');
   const name=((input && input.value) || '').trim().replace(/\s+/g,' ');
@@ -1066,8 +1108,10 @@ function startCTF(){
   if(name.length<2){ if(input){input.focus();input.style.borderColor='#ff6b6b';} return; }
   if(input) input.style.borderColor='';
   teamName=name.toUpperCase();
+  try{tabViolations=Number(sessionStorage.getItem('it107_tab_violations')||0);}catch(e){}
   initializeCTFTimer();
   if(ctfTimeExpired()){lockCTFForTime();return;}
+  if(isCTFLocked){lockCTFForTabViolation();return;}
   try {
     teamId=sessionStorage.getItem('it107_team_id')||makeTeamId();
     sessionStorage.setItem('it107_team_id',teamId);
