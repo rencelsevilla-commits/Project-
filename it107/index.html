@@ -353,12 +353,12 @@ body:has(#matrixRain){overflow-x:hidden}
 
 <div class="layout">
 <aside class="panel">
-  <div class="panelTitle">MISSION LIST // 21</div>
+  <div class="panelTitle">MISSION LIST // 25</div>
   <div class="missions" id="missions"></div>
   <div class="progress">
     <div style="font-size:10px;color:#6c9279">OVERALL PROGRESS</div>
     <div class="track"><div class="bar" id="bar"></div></div>
-    <div class="score" id="score">0 / 25</div>
+    <div class="score" id="score">0 / 29</div>
   </div>
   <div class="scorePanel">
     <div class="scoreLabel">LIVE SCORE</div>
@@ -459,7 +459,7 @@ body:has(#matrixRain){overflow-x:hidden}
     TARGET: <b>KNOWLEDGE</b><br>
     MODE: <b>CTF QUIZ</b><br>
     ACCESS: <b id="access">LEVEL 01</b><br>
-    SCORE: <b id="rscore">0 / 25</b><br>
+    SCORE: <b id="rscore">0 / 29</b><br>
     CONNECTION: <b>ESTABLISHED</b>
   </div>
 </aside>
@@ -759,6 +759,50 @@ const challenges = [
       "SECURITY PROCEDURES"
     ]
   }
+  {
+    "title": "THE BACKUP RECOVERY",
+    "category": "SECURITY CONTROLS",
+    "type": "Scenario Analysis",
+    "points": 1,
+    "attempts": 3,
+    "question": "RECOVERY CASE: A ransomware incident makes several university files unavailable. The IT team has a recent, verified copy stored separately from the affected system. What security measure helps restore the files?",
+    "hint": "Think of a safe copy of data that can be restored.",
+    "guide": "A backup is a separate copy of data used for recovery after loss or damage.",
+    "answer": ["BACKUP", "DATA BACKUP", "BACKUPS"]
+  },
+  {
+    "title": "THE UNAUTHORIZED LOGIN",
+    "category": "ACCESS CONTROL",
+    "type": "Evidence Analysis",
+    "points": 1,
+    "attempts": 3,
+    "question": "LOGIN LOG: An account signs in at an unusual time from an unfamiliar device. The owner says they did not perform the login. What should the administrator treat this event as first?",
+    "hint": "It may be a security event that needs investigation.",
+    "guide": "Unexpected account activity should be investigated as a possible security incident.",
+    "answer": ["SUSPICIOUS ACTIVITY", "POSSIBLE SECURITY INCIDENT", "SECURITY INCIDENT", "SUSPICIOUS LOGIN"]
+  },
+  {
+    "title": "THE SECURITY PATCH",
+    "category": "THREATS & VULNERABILITIES",
+    "type": "Root Cause / Prevention",
+    "points": 1,
+    "attempts": 3,
+    "question": "PATCH MANAGEMENT: A vendor releases an update that fixes a known software weakness. Which routine security action should the administrator perform after testing and approving the update?",
+    "hint": "It is the process of applying software fixes and updates.",
+    "guide": "Applying security patches helps remove known vulnerabilities.",
+    "answer": ["PATCH", "PATCHING", "APPLY THE PATCH", "INSTALL THE SECURITY UPDATE", "UPDATE THE SOFTWARE"]
+  },
+  {
+    "title": "THE INCIDENT RECORD",
+    "category": "INCIDENT RESPONSE",
+    "type": "Evidence Handling",
+    "points": 1,
+    "attempts": 3,
+    "question": "INCIDENT REPORT: After containing a suspected attack, the team records the time, affected systems, observed actions, and steps taken. What is this written record commonly called?",
+    "hint": "It documents what happened and what the response team did.",
+    "guide": "A written incident report preserves the key details of an event and its response.",
+    "answer": ["INCIDENT REPORT", "SECURITY INCIDENT REPORT", "INCIDENT DOCUMENTATION", "REPORT"]
+  }
 ];
 
 const originalChallengeOrder = challenges.slice();
@@ -796,7 +840,7 @@ async function syncTeam(status='IN PROGRESS'){
     team_id:teamId,
     team_name:teamName,
     score:Number(score.toFixed(1)),
-    max_score:25,
+    max_score:29,
     wrong_attempts:wrongAttempts,
     penalty:Number(totalPenalty.toFixed(1)),
     solved:solved.filter(Boolean).length,
@@ -810,12 +854,12 @@ async function syncTeam(status='IN PROGRESS'){
 }
 
 function updateScoreHUD(){
-  document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 25";
+  document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 29";
   document.getElementById("sideScore").textContent=score.toFixed(1).replace('.0','');
   document.getElementById("solved").textContent=solved.filter(Boolean).length;
   document.getElementById("remaining").textContent=challenges.length-solved.filter(Boolean).length;
-  document.getElementById("xp").style.width=Math.min(100,(score/25)*100)+"%";
-  document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 25";
+  document.getElementById("xp").style.width=Math.min(100,(score/29)*100)+"%";
+  document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 29";
   let rank="ROOKIE";
   if(score>=21) rank="SECURITY ELITE";
   else if(score>=16) rank="THREAT HUNTER";
@@ -837,7 +881,7 @@ function renderMissions(){
 function render(){
   const c=challenges[current]; attempts=maxAttemptsFor(current);
   document.getElementById("quiz").style.display="block"; document.getElementById("complete").style.display="none";
-  document.getElementById("num").textContent="CHALLENGE "+String(current+1).padStart(2,'0')+" / 21";
+  document.getElementById("num").textContent="CHALLENGE "+String(current+1).padStart(2,'0')+" / 25";
   document.getElementById("cat").textContent=(c.category||c.cat)+"  |  TYPE: "+c.type+"  |  DIFFICULTY: "+(c.difficulty||'MEDIUM');
   document.getElementById("title").textContent=c.title;
   document.getElementById("scenario").textContent=c.scenario||"Analyze the evidence and identify the correct Information Assurance and Security I concept.";
@@ -850,7 +894,7 @@ function render(){
   document.getElementById("answer").value=""; document.getElementById("answer").disabled=false;
   document.querySelector(".answerRow button").disabled=false;
   document.getElementById("feedback").textContent=""; document.getElementById("feedback").className="feedback";
-  document.getElementById("bar").style.width=((current)/21*100)+"%";
+  document.getElementById("bar").style.width=((current)/25*100)+"%";
   document.getElementById("access").textContent="LEVEL "+String(current+1).padStart(2,'0');
   document.getElementById("itemPoints").textContent=c.points;
   document.getElementById("attempts").textContent=attempts; document.getElementById("maxAttempts").textContent=maxAttemptsFor(current);
@@ -939,7 +983,7 @@ async function submitAnswer(){
   const answers=Array.isArray(c.answer)?c.answer:[c.answer];
   const accepted=answers.map(norm).includes(value);
   if(accepted){
-    const earned=Number(c.points); score=Math.min(25,score+earned); solved[current]=true;
+    const earned=Number(c.points); score=Math.min(29,score+earned); solved[current]=true;
     fb.textContent="ACCESS GRANTED — CORRECT. +"+earned+" POINT"+(earned>1?'S':'')+" // NEXT LEVEL UNLOCKED."; fb.className="feedback good";
     input.disabled=true; submit.disabled=true; updateScoreHUD(); renderMissions();
     await syncTeam(current===challenges.length-1?'COMPLETED':'IN PROGRESS');
@@ -995,7 +1039,7 @@ function startCTF(){
 }
 
 function finish(){
-  document.getElementById("quiz").style.display="none"; document.getElementById("complete").style.display="block"; document.getElementById("bar").style.width="100%"; document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 25"; document.getElementById("sideScore").textContent=score.toFixed(1).replace('.0',''); document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 25"; document.getElementById("access").textContent="ALL ACCESS"; updateScoreHUD(); renderMissions(); syncTeam('COMPLETED');
+  document.getElementById("quiz").style.display="none"; document.getElementById("complete").style.display="block"; document.getElementById("bar").style.width="100%"; document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 29"; document.getElementById("sideScore").textContent=score.toFixed(1).replace('.0',''); document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 29"; document.getElementById("access").textContent="ALL ACCESS"; updateScoreHUD(); renderMissions(); syncTeam('COMPLETED');
 }
 
 function restart(){ challenges.splice(0,challenges.length,...originalChallengeOrder); current=0;score=0;wrongAttempts=0;totalPenalty=0;skipCount=0;chanceCount=0;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
