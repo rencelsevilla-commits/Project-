@@ -47,7 +47,7 @@ h2{font-size:30px;color:#fff;margin:9px 0 13px;letter-spacing:2px}
 .question{font-size:16px;line-height:1.7;color:#edfff3}
 .answerRow{display:flex;gap:9px;margin-top:16px}
 .chanceRow{display:flex;justify-content:flex-end;gap:9px;margin-top:10px;flex-wrap:wrap}
-.chanceBtn{display:inline-block!important;min-height:44px;border:2px solid #00dfff!important;color:#8beeff;background:#03131a}
+.chanceBtn{display:inline-block!important;visibility:visible!important;opacity:1!important;flex:0 0 auto;min-height:44px;border:2px solid #00dfff!important;color:#8beeff;background:#03131a;position:relative;z-index:15;white-space:nowrap}
 .chanceBtn:hover{background:#064253;color:#fff}.chanceBtn:disabled{opacity:.45;cursor:not-allowed}
 .chanceInfo{display:none;margin-top:9px;padding:12px;border:1px dashed #00dfff;background:rgba(0,216,255,.05);color:#b9f5ff;font-size:12px;line-height:1.7;white-space:pre-line}
 .skipRow{display:flex!important;visibility:visible!important;opacity:1!important;justify-content:flex-end;gap:9px;margin-top:12px;position:relative;z-index:10;width:100%}
@@ -395,9 +395,9 @@ body:has(#matrixRain){overflow-x:hidden}
   <div class="answerRow">
     <input id="answer" type="text" autocomplete="off" spellcheck="false" placeholder="Enter your answer...">
     <button onclick="submitAnswer()">[ SUBMIT ]</button>
+    <button type="button" id="chanceBtn" class="chanceBtn" onclick="useChance()">[ GET A CLUE // 2 LEFT ]</button>
   </div>
   <div class="feedback" id="feedback"></div>
-  <div class="chanceRow"><button type="button" id="chanceBtn" class="chanceBtn" onclick="useChance()">[ CHANCE // 2 LEFT ]</button></div>
   <div id="chanceInfo" class="chanceInfo"></div>
   <div class="skipRow"><button type="button" id="skipBtn" class="skipBtn" onclick="skipQuestion()">[ SKIP QUESTION // 2 SKIPS LEFT ]</button></div>
 
@@ -845,7 +845,7 @@ function render(){
   if(skipBtn){skipBtn.disabled=skipCount>=MAX_SKIPS || current>=challenges.length-1;skipBtn.textContent=skipCount>=MAX_SKIPS?"[ SKIPS USED // 0 LEFT ]":"[ SKIP QUESTION // "+(MAX_SKIPS-skipCount)+" SKIP"+(MAX_SKIPS-skipCount===1?"":"S")+" LEFT ]";}
   const chanceBtn=document.getElementById("chanceBtn");
   const chanceInfo=document.getElementById("chanceInfo");
-  if(chanceBtn){chanceBtn.disabled=chanceCount>=MAX_CHANCES;chanceBtn.textContent=chanceCount>=MAX_CHANCES?"[ CHANCES USED // 0 LEFT ]":"[ CHANCE // "+(MAX_CHANCES-chanceCount)+" LEFT ]";}
+  if(chanceBtn){chanceBtn.disabled=chanceCount>=MAX_CHANCES;chanceBtn.textContent=chanceCount>=MAX_CHANCES?"[ CLUES USED // 0 LEFT ]":"[ GET A CLUE // "+(MAX_CHANCES-chanceCount)+" LEFT ]";}
   if(chanceInfo){chanceInfo.style.display="none";chanceInfo.textContent="";}
   const sec=document.getElementById("scrambleSection"), scr=document.getElementById("scramble");
   if(c.scramble){
@@ -888,7 +888,7 @@ function useChance(){
   info.textContent="ANSWER CLUE // CHANCE USED\nWord count: "+words.length+"\nLetter count (excluding spaces and symbols): "+letters.length+"\nFirst letter: "+first+"\nLast letter: "+last+"\n\nThis clue does not reveal the full answer.";
   info.style.display="block";
   btn.disabled=chanceCount>=MAX_CHANCES;
-  btn.textContent=chanceCount>=MAX_CHANCES?"[ CHANCES USED // 0 LEFT ]":"[ CHANCE // "+(MAX_CHANCES-chanceCount)+" LEFT ]";
+  btn.textContent=chanceCount>=MAX_CHANCES?"[ CLUES USED // 0 LEFT ]":"[ GET A CLUE // "+(MAX_CHANCES-chanceCount)+" LEFT ]";
   if(fb){fb.textContent="CLUE UNLOCKED — "+(MAX_CHANCES-chanceCount)+" chance(s) remaining.";fb.className="feedback good";}
 }
 
