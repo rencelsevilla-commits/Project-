@@ -1120,6 +1120,7 @@ function startCTF(){
     teamId=makeTeamId();
     console.warn('Session storage unavailable; continuing without saved session.',storageError);
   }
+  if(tabViolations>=3){lockCTFForTabViolation();return;}
   const hudName=document.getElementById('teamHudName');
   const hud=document.getElementById('teamHud');
   if(hudName) hudName.textContent=teamName;
