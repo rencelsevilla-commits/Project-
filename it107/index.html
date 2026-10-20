@@ -821,6 +821,24 @@ const challenges = [
 ];
 
 const originalChallengeOrder = challenges.slice();
+
+// Give each team a repeatable but different challenge order.
+// The same team name gets the same order after refresh; different names get different shuffles.
+function applyTeamShuffle(){
+  const items=originalChallengeOrder.slice();
+  const seedText=String(teamName||'DEFAULT TEAM').trim().toUpperCase();
+  let seed=2166136261;
+  for(let i=0;i<seedText.length;i++){
+    seed^=seedText.charCodeAt(i);
+    seed=Math.imul(seed,16777619)>>>0;
+  }
+  for(let i=items.length-1;i>0;i--){
+    seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+    const j=seed%(i+1);
+    [items[i],items[j]]=[items[j],items[i]];
+  }
+  challenges.splice(0,challenges.length,...items);
+}
 const pointValues = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2];
 let current=0;
 let score=0;
@@ -1135,6 +1153,7 @@ function startCTF(){
     teamId=makeTeamId();
     console.warn('Session storage unavailable; continuing without saved session.',storageError);
   }
+  applyTeamShuffle();
   if(tabViolations>=1){lockCTFForTabViolation();return;}
   const hudName=document.getElementById('teamHudName');
   const hud=document.getElementById('teamHud');
@@ -1157,7 +1176,7 @@ function finish(){
   document.getElementById("quiz").style.display="none"; document.getElementById("complete").style.display="block"; document.getElementById("bar").style.width="100%"; document.getElementById("score").textContent=score.toFixed(1).replace('.0','')+" / 29"; document.getElementById("sideScore").textContent=score.toFixed(1).replace('.0',''); document.getElementById("rscore").textContent=score.toFixed(1).replace('.0','')+" / 29"; document.getElementById("access").textContent="ALL ACCESS"; updateScoreHUD(); renderMissions(); syncTeam('COMPLETED');
 }
 
-function restart(){ challenges.splice(0,challenges.length,...originalChallengeOrder); current=0;score=0;wrongAttempts=0;totalPenalty=0;skipCount=0;chanceCount=0;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
+function restart(){ applyTeamShuffle(); current=0;score=0;wrongAttempts=0;totalPenalty=0;skipCount=0;chanceCount=0;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
 
 document.addEventListener('DOMContentLoaded',()=>{
   updateCTFTimer();
