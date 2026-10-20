@@ -1075,7 +1075,7 @@ function lockCTFForTabViolation(){
     overlay.style.display='flex';
     const title=overlay.querySelector('h3'), message=overlay.querySelector('p'), admin=overlay.querySelector('.rank');
     if(title)title.textContent='CTF LOCKED — TAB VIOLATIONS';
-    if(message)message.textContent='Your team reached 3 tab-switch violations. Your CTF session is locked. Please contact your instructor.';
+    if(message)message.textContent='Your team switched away from the CTF page. Your CTF session is locked after the first tab-switch violation. Please contact your instructor.';
     if(admin)admin.textContent='ADMIN MESSAGE: TAB-SWITCH LIMIT REACHED';
   }
   ['answer','skipBtn','chanceBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true;});
@@ -1087,9 +1087,9 @@ function recordTabSwitch(){
   tabViolations++;
   try{sessionStorage.setItem('it107_tab_violations',String(tabViolations));}catch(e){}
   const feedback=document.getElementById('feedback');
-  if(tabViolations>=3){lockCTFForTabViolation();return;}
+  if(tabViolations>=1){lockCTFForTabViolation();return;}
   if(feedback){
-    feedback.textContent='TAB-SWITCH WARNING '+tabViolations+'/3 — Stay on the CTF page. At 3 violations, your team will be locked.';
+    feedback.textContent='TAB-SWITCH DETECTED — LOCKING YOUR TEAM.';
     feedback.className='feedback bad';
   }
   syncTeam('WARNING - TAB SWITCH '+tabViolations+'/3');
@@ -1120,7 +1120,7 @@ function startCTF(){
     teamId=makeTeamId();
     console.warn('Session storage unavailable; continuing without saved session.',storageError);
   }
-  if(tabViolations>=3){lockCTFForTabViolation();return;}
+  if(tabViolations>=1){lockCTFForTabViolation();return;}
   const hudName=document.getElementById('teamHudName');
   const hud=document.getElementById('teamHud');
   if(hudName) hudName.textContent=teamName;
