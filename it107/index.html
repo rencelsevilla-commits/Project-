@@ -1097,8 +1097,10 @@ function recordTabSwitch(){
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden')recordTabSwitch();
 });
+// Catch focus loss as an additional signal. This can also fire for browser dialogs
+// or switching applications, so instructors should test for false positives.
 window.addEventListener('blur',()=>{
-  // Blur can happen for browser chrome or dialogs; visibilitychange is the main signal.
+  if(document.visibilityState==='visible') recordTabSwitch();
 });
 
 function startCTF(){
