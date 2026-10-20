@@ -289,9 +289,11 @@ body:has(#matrixRain){overflow-x:hidden}
 .team-input:focus{border-color:#67ff9c;box-shadow:0 0 14px rgba(103,255,156,.18)}
 .team-note{font-size:10px;color:#6c9279;margin-top:8px}
 .team-hud{position:fixed;right:18px;top:86px;z-index:20;padding:8px 12px;border:1px solid rgba(90,255,170,.22);background:rgba(2,12,8,.82);color:#9fffc2;font:700 11px monospace;letter-spacing:1px;display:none}
+#ctfTimer{position:fixed;left:18px;top:18px;z-index:10000;padding:10px 14px;border:1px solid #00dfff;background:rgba(2,12,18,.96);color:#00dfff;font:bold 14px Consolas,monospace;letter-spacing:1px;box-shadow:0 0 18px rgba(0,216,255,.15)}#ctfTimer.warning{border-color:#ffb52e;color:#ffb52e}#ctfTimer.expired{border-color:#ff526a;color:#ff526a}@media(max-width:700px){#ctfTimer{top:8px;left:8px;font-size:12px;padding:8px 10px}}
 </style>
 </head>
 <body>
+<div id="ctfTimer" aria-live="polite">TIME LEFT: 60:00</div>
 <div id="teamHud" class="team-hud">TEAM: <span id="teamHudName">---</span></div>
 
 <div id="startScreen" class="start-screen">
@@ -926,6 +928,7 @@ function render(){
 }
 
 function useChance(){
+  if(ctfTimeExpired()){lockCTFForTime();return;}
   const btn=document.getElementById("chanceBtn");
   const info=document.getElementById("chanceInfo");
   const fb=document.getElementById("feedback");
@@ -953,6 +956,7 @@ function useChance(){
 }
 
 async function skipQuestion(){
+  if(ctfTimeExpired()){lockCTFForTime();return;}
   const fb=document.getElementById("feedback");
   const btn=document.getElementById("skipBtn");
   if(skipCount>=MAX_SKIPS){
@@ -978,6 +982,7 @@ async function skipQuestion(){
 }
 
 async function submitAnswer(){
+  if(ctfTimeExpired()){lockCTFForTime();return;}
   const c=challenges[current], value=norm(document.getElementById("answer").value), fb=document.getElementById("feedback"), panel=document.getElementById("mainPanel"), submit=document.querySelector(".answerRow button"), input=document.getElementById("answer");
   if(!value){ fb.textContent="ACCESS DENIED — ENTER AN ANSWER FIRST."; fb.className="feedback bad"; input.focus(); return; }
   const answers=Array.isArray(c.answer)?c.answer:[c.answer];
@@ -1006,6 +1011,54 @@ async function submitAnswer(){
   fb.textContent="ACCESS DENIED — INCORRECT. -"+penalty+" PT. ATTEMPTS REMAINING: "+attempts+" / "+maxAttemptsFor(current); fb.className="feedback bad"; input.select();
 }
 
+
+const CTF_DURATION_MS = 60 * 60 * 1000;
+let ctfTimerInterval = null;
+function lockCTFForTime(){
+  const overlay=document.getElementById('lockOverlay');
+  if(overlay){
+    overlay.style.display='flex';
+    const title=overlay.querySelector('h3');
+    const message=overlay.querySelector('p');
+    const admin=overlay.querySelector('.rank');
+    if(title) title.textContent='TIME IS UP';
+    if(message) message.textContent='The 1-hour CTF session has ended. Answers and challenge actions are now locked.';
+    if(admin) admin.textContent='ADMIN MESSAGE: CTF SESSION CLOSED';
+  }
+  ['answer','skipBtn','chanceBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true;});
+  const submit=document.querySelector('.answerRow button');if(submit)submit.disabled=true;
+  const timer=document.getElementById('ctfTimer');if(timer){timer.textContent='TIME LEFT: 00:00';timer.classList.add('expired');}
+  syncTeam('TIME UP');
+}
+function updateCTFTimer(){
+  let startedAt=0;
+  try{startedAt=Number(sessionStorage.getItem('it107_ctf_started_at')||0);}catch(e){}
+  const timer=document.getElementById('ctfTimer');
+  if(!startedAt){if(timer)timer.textContent='TIME LEFT: 60:00';return;}
+  const remaining=Math.max(0,CTF_DURATION_MS-(Date.now()-startedAt));
+  if(timer){
+    const seconds=Math.ceil(remaining/1000);
+    timer.textContent='TIME LEFT: '+String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+    timer.classList.toggle('warning',remaining<=5*60*1000 && remaining>0);
+    timer.classList.toggle('expired',remaining<=0);
+  }
+  if(remaining<=0){
+    if(ctfTimerInterval){clearInterval(ctfTimerInterval);ctfTimerInterval=null;}
+    lockCTFForTime();
+  }
+}
+function initializeCTFTimer(){
+  try{if(!sessionStorage.getItem('it107_ctf_started_at'))sessionStorage.setItem('it107_ctf_started_at',String(Date.now()));}catch(e){}
+  updateCTFTimer();
+  if(ctfTimerInterval)clearInterval(ctfTimerInterval);
+  ctfTimerInterval=setInterval(updateCTFTimer,1000);
+}
+function ctfTimeExpired(){
+  let startedAt=0;
+  try{startedAt=Number(sessionStorage.getItem('it107_ctf_started_at')||0);}catch(e){}
+  return startedAt>0 && Date.now()-startedAt>=CTF_DURATION_MS;
+}
+
 function startCTF(){
   const input=document.getElementById('teamNameInput');
   const name=((input && input.value) || '').trim().replace(/\s+/g,' ');
@@ -1013,6 +1066,8 @@ function startCTF(){
   if(name.length<2){ if(input){input.focus();input.style.borderColor='#ff6b6b';} return; }
   if(input) input.style.borderColor='';
   teamName=name.toUpperCase();
+  initializeCTFTimer();
+  if(ctfTimeExpired()){lockCTFForTime();return;}
   try {
     teamId=sessionStorage.getItem('it107_team_id')||makeTeamId();
     sessionStorage.setItem('it107_team_id',teamId);
@@ -1045,6 +1100,7 @@ function finish(){
 function restart(){ challenges.splice(0,challenges.length,...originalChallengeOrder); current=0;score=0;wrongAttempts=0;totalPenalty=0;skipCount=0;chanceCount=0;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
 
 document.addEventListener('DOMContentLoaded',()=>{
+  updateCTFTimer();
   const saved=sessionStorage.getItem('it107_team_name'); if(saved){const i=document.getElementById('teamNameInput');if(i)i.value=saved;}
   updateScoreHUD(); renderMissions();
 });
