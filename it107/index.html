@@ -1174,7 +1174,7 @@ window.addEventListener('blur',()=>{
   if(document.visibilityState==='visible') recordTabSwitch();
 });
 
-async function startCTF(){
+async async function startCTF(){
   const input=document.getElementById('teamNameInput');
   const name=((input && input.value) || '').trim().replace(/\s+/g,' ');
   if(!name){ if(input){input.focus();input.style.borderColor='#ff6b6b';} return; }
