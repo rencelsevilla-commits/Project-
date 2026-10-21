@@ -1,7 +1,7 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>IT107 Security CTF | Live Monitor</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>IT107 SECURITY | Live Monitor</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
 *{box-sizing:border-box}body{margin:0;background:#020604;color:#d9ffe7;font:16px Consolas,monospace}main{width:min(1450px,96%);margin:auto;padding:28px 0}.g{color:#00ff73}.c{color:#00dfff}h1{font-size:clamp(30px,5vw,58px);color:#fff;text-shadow:0 0 15px #00ff73;text-align:center;margin:18px 0}.sub{text-align:center;color:#00dfff;margin-bottom:20px}.board{border:1px solid #00ff73;box-shadow:0 0 20px #00ff7322;overflow:hidden}.row{display:grid;grid-template-columns:55px minmax(130px,1.4fr) 110px 80px 85px 95px 100px 180px;padding:15px 12px;border-bottom:1px solid #164c34;gap:8px;align-items:center}.head{color:#00ff73;font-size:11px;letter-spacing:1px}.rank{font-size:27px;color:#00dfff}.team{font-size:17px;color:#fff;overflow-wrap:anywhere}.score{font-size:22px;color:#00ff73}.foot{text-align:center;color:#70957c;margin-top:15px;font-size:11px}.warning{color:#ffb454}.penalty{color:#ff6b6b}@media(max-width:900px){main{width:99%}.row{grid-template-columns:35px minmax(85px,1fr) 85px 55px 65px 75px;padding:10px 6px;font-size:11px}.wrong,.penalty{display:none}.rank{font-size:20px}.team{font-size:13px}.score{font-size:17px}.head{font-size:9px}}
 
-/* IT107 SECURITY CTF — premium monitor dashboard */
+/* SECURITY — premium monitor dashboard */
 :root{--bg:#080d1a;--panel:#111a30;--line:rgba(155,170,220,.17);--muted:#9ba8c8;--text:#edf1ff;--violet:#9a8cff;--cyan:#69e5ff;--green:#6df5c1;--amber:#ffc978;--red:#ff718e}
 html{min-height:100%;background:var(--bg)}
 body{min-height:100vh;background:radial-gradient(ellipse at 12% 0%,rgba(103,91,255,.18),transparent 34%),radial-gradient(ellipse at 90% 5%,rgba(35,200,235,.10),transparent 28%),linear-gradient(145deg,#080d1a,#0b1224 55%,#090e1c)!important;color:var(--text)!important;font:14px/1.5 Inter,"Segoe UI",Roboto,Arial,sans-serif!important}
@@ -56,15 +56,15 @@ h1{text-align:left!important;margin:10px 0 11px!important;font:850 clamp(30px,4.
 </style>
 </style></head><body><main>
 <header class="hero">
- <div class="brandline"><span class="brandmark">NO<span>/</span>T</span><span class="g">CSUCC <i></i> IT107 <i></i> SECURITY OPERATIONS</span><span class="livepill"><b></b> LIVE MONITOR</span></div>
- <div class="hero-copy"><div class="eyebrow">SECURITY TRAINING ENVIRONMENT <span>•</span> INSTRUCTOR CONSOLE</div><h1>NETWORK OPERATIVE <em>TRAINING</em></h1><p>Team performance, challenge progress, and exam integrity monitoring.</p></div>
+ <div class="brandline"><span class="brandmark">IT<span>107</span></span><span class="g">CSUCC <i></i> IT107 <i></i> SECURITY</span><span class="livepill"><b></b> LIVE MONITOR</span></div>
+ <div class="hero-copy"><div class="eyebrow">SUBJECT: SECURITY <span>•</span> INSTRUCTOR CONSOLE</div><h1>SECURITY</h1><p>Team performance, challenge progress, and exam integrity monitoring.</p></div>
  <div class="hero-meta"><div><span class="meta-icon">01</span><div><small>MODULE</small><strong>IT 107 / SECURITY</strong></div></div><div><span class="meta-icon">02</span><div><small>MAXIMUM SCORE</small><strong>29 POINTS</strong></div></div><div><span class="meta-icon">03</span><div><small>REFRESH CYCLE</small><strong>3 SECONDS</strong></div></div></div>
 </header>
 <section class="section-head"><div><div class="eyebrow">PERFORMANCE OVERVIEW</div><h2>Team leaderboard</h2><p>Rankings update automatically as teams submit answers.</p></div><span class="livepill"><b></b> DATABASE LINK</span></section>
 <section class="stats"><article class="stat-card"><span class="stat-label">ACTIVE TEAMS</span><strong id="statTeams">—</strong><small>Registered this session</small></article><article class="stat-card"><span class="stat-label">TOP SCORE</span><strong id="statTop">—</strong><small>Highest score recorded</small></article><article class="stat-card"><span class="stat-label">CHALLENGES SOLVED</span><strong id="statSolved">—</strong><small>Across all teams</small></article><article class="stat-card"><span class="stat-label">TAB FLAGS</span><strong id="statFlags">—</strong><small>Recorded focus violations</small></article></section>
 <div class="board-wrap"><div class="board-toolbar"><div><span class="toolbar-dot"></span> LIVE RANKING <span class="toolbar-sep">/</span> ALL TEAMS</div><div class="toolbar-note">SORTED BY HIGHEST SCORE</div></div><div class="board" id="b"></div></div>
 <div class="foot" id="f"><span class="foot-dot"></span> CONNECTING TO LIVE DATABASE...</div>
-<footer>IT107 SECURITY CTF <span>•</span> IT107 SECURITY CTF <span>•</span> CSUCC INSTRUCTOR VIEW</footer>
+<footer>IT107 <span>•</span> SECURITY <span>•</span> CSUCC INSTRUCTOR VIEW</footer>
 </main><script>
 const d=supabase.createClient("https://rhhijqcsryqfcmysopxr.supabase.co","sb_publishable_-Wdl-SdwCmR1YB_GIB-Kkg_cA_09H-B");
 function e(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
