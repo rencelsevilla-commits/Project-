@@ -1290,9 +1290,16 @@ async function startCTF(){
       wrongAttempts=Number(localState.wrongAttempts)||0;
       totalPenalty=Number(localState.totalPenalty)||0;
     }
-    if(!existingTeam || Number(existingTeam.tab_violations||0)===0){
+    if(!existingTeam){
       tabViolations=Number(localState.tabViolations)||0;
       isCTFLocked=Boolean(localState.isCTFLocked);
+    }else if(existingTeam.is_locked===false && Number(existingTeam.tab_violations||0)===0){
+      // Database unlock state overrides stale local browser state.
+      tabViolations=0;
+      isCTFLocked=false;
+    }else{
+      tabViolations=Math.max(Number(existingTeam.tab_violations)||0,Number(localState.tabViolations)||0);
+      isCTFLocked=Boolean(existingTeam.is_locked || localState.isCTFLocked);
     }
     const startedAt=localState.startedAt;
     if(startedAt){try{sessionStorage.setItem('it107_ctf_started_at',startedAt);}catch(e){}}
