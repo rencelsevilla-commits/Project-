@@ -876,7 +876,28 @@ if(window.supabase && !SUPABASE_URL.includes('PASTE_')){
   try{ sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY); }catch(e){ console.warn('Supabase init failed',e); }
 }
 
+function localProgressKey(){ return 'it107_progress_'+String(teamName||'').trim().toUpperCase(); }
+function saveLocalProgress(){
+  if(!teamName) return;
+  try{
+    localStorage.setItem(localProgressKey(),JSON.stringify({
+      teamName, current, score, attempts, solved, wrongAttempts, totalPenalty,
+      skipCount, chanceCount, tabViolations, isCTFLocked,
+      startedAt:sessionStorage.getItem('it107_ctf_started_at')||'',
+      savedAt:Date.now()
+    }));
+  }catch(e){console.warn('Local progress save unavailable:',e);}
+}
+function readLocalProgress(name){
+  try{
+    const raw=localStorage.getItem('it107_progress_'+String(name||'').trim().toUpperCase());
+    if(!raw)return null;
+    const state=JSON.parse(raw);
+    return state && String(state.teamName||'').toUpperCase()===String(name||'').toUpperCase()?state:null;
+  }catch(e){return null;}
+}
 async function syncTeam(status='IN PROGRESS'){
+  saveLocalProgress();
   if(!sb || !teamId || !teamName) return;
   const payload={
     team_id:teamId,
@@ -895,6 +916,7 @@ async function syncTeam(status='IN PROGRESS'){
   };
   const {error}=await sb.from('it107_teams').upsert(payload,{onConflict:'team_id'});
   if(error) console.warn('Score sync failed:',error.message);
+  else saveLocalProgress();
 }
 
 function updateScoreHUD(){
@@ -1141,29 +1163,36 @@ function ctfTimeExpired(){
 
 function lockCTFForTabViolation(){
   isCTFLocked=true;
+  saveLocalProgress();
   const overlay=document.getElementById('lockOverlay');
   if(overlay){
     overlay.style.display='flex';
     const title=overlay.querySelector('h3'), message=overlay.querySelector('p'), admin=overlay.querySelector('.rank');
     if(title)title.textContent='CTF LOCKED — TAB VIOLATIONS';
-    if(message)message.textContent='Your team switched away from the CTF page. Your CTF session is locked after the first tab-switch violation. Please contact your instructor.';
+    if(message)message.textContent='Your team switched away from the CTF page twice. Your CTF session is now locked. Please contact your instructor.';
     if(admin)admin.textContent='ADMIN MESSAGE: TAB-SWITCH LIMIT REACHED';
   }
   ['answer','skipBtn','chanceBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true;});
   const submit=document.querySelector('.answerRow button');if(submit)submit.disabled=true;
   syncTeam('LOCKED - TAB VIOLATIONS');
 }
+let lastTabSwitchAt=0;
 function recordTabSwitch(){
   if(!teamId || !teamName || isCTFLocked || ctfTimeExpired())return;
+  // visibilitychange and blur often fire for the same switch; count them as one event.
+  const now=Date.now();
+  if(now-lastTabSwitchAt<1200)return;
+  lastTabSwitchAt=now;
   tabViolations++;
   try{sessionStorage.setItem('it107_tab_violations',String(tabViolations));}catch(e){}
   const feedback=document.getElementById('feedback');
-  if(tabViolations>=1){lockCTFForTabViolation();return;}
+  if(tabViolations>=2){saveLocalProgress();syncTeam('LOCKED - TAB VIOLATIONS');lockCTFForTabViolation();return;}
   if(feedback){
-    feedback.textContent='TAB-SWITCH DETECTED — LOCKING YOUR TEAM.';
+    feedback.textContent='WARNING — TAB SWITCH DETECTED ('+tabViolations+'/2). One more tab switch will lock your team.';
     feedback.className='feedback bad';
   }
-  syncTeam('WARNING - TAB SWITCH '+tabViolations+'/3');
+  saveLocalProgress();
+  syncTeam('WARNING - TAB SWITCH '+tabViolations+'/2');
 }
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden')recordTabSwitch();
@@ -1231,6 +1260,7 @@ async function startCTF(){
     console.warn('Session storage unavailable; continuing without saved session.',storageError);
   }
   applyTeamShuffle();
+  const localState=readLocalProgress(teamName);
   if(existingTeam){
     score=Number(existingTeam.score)||0;
     wrongAttempts=Number(existingTeam.wrong_attempts)||0;
@@ -1240,13 +1270,34 @@ async function startCTF(){
     solved=Array(challenges.length).fill(false);
     for(let j=0;j<Math.min(Number(existingTeam.solved)||0,current);j++) solved[j]=true;
     attempts=maxAttemptsFor(current);
+    tabViolations=Math.max(tabViolations,Number(existingTeam.tab_violations)||0);
     if(existingTeam.is_locked===false && Number(existingTeam.tab_violations||0)===0){
       isCTFLocked=false;
       tabViolations=0;
       try{sessionStorage.setItem('it107_tab_violations','0');}catch(e){}
     }
   }
-  if(tabViolations>=1){lockCTFForTabViolation();return;}
+  // Local snapshot preserves exact solved flags and challenge state across refresh/offline periods.
+  // Keep the database score authoritative so instructor score adjustments are not overwritten.
+  if(localState){
+    current=Math.max(0,Math.min(challenges.length-1,Number(localState.current)||0));
+    if(Array.isArray(localState.solved) && localState.solved.length===challenges.length) solved=localState.solved.map(Boolean);
+    attempts=Math.max(1,Number(localState.attempts)||maxAttemptsFor(current));
+    skipCount=Math.max(0,Number(localState.skipCount)||0);
+    chanceCount=Math.max(0,Number(localState.chanceCount)||0);
+    if(!existingTeam){
+      score=Number(localState.score)||0;
+      wrongAttempts=Number(localState.wrongAttempts)||0;
+      totalPenalty=Number(localState.totalPenalty)||0;
+    }
+    if(!existingTeam || Number(existingTeam.tab_violations||0)===0){
+      tabViolations=Number(localState.tabViolations)||0;
+      isCTFLocked=Boolean(localState.isCTFLocked);
+    }
+    const startedAt=localState.startedAt;
+    if(startedAt){try{sessionStorage.setItem('it107_ctf_started_at',startedAt);}catch(e){}}
+  }
+  if(tabViolations>=2){lockCTFForTabViolation();return;}
   const hudName=document.getElementById('teamHudName');
   const hud=document.getElementById('teamHud');
   if(hudName) hudName.textContent=teamName;
@@ -1269,6 +1320,11 @@ function finish(){
 }
 
 function restart(){ applyTeamShuffle(); current=0;score=0;wrongAttempts=0;totalPenalty=0;skipCount=0;chanceCount=0;solved=Array(challenges.length).fill(false);attempts=maxAttemptsFor(0);document.getElementById("complete").style.display="none";document.getElementById("quiz").style.display="block";document.getElementById("lockOverlay").style.display="none";render();updateScoreHUD();syncTeam('RESTARTED'); }
+
+window.addEventListener('online',()=>{if(teamId && teamName)syncTeam(isCTFLocked?'LOCKED - TAB VIOLATIONS':'IN PROGRESS');});
+window.addEventListener('offline',()=>{saveLocalProgress();});
+window.addEventListener('pagehide',()=>{saveLocalProgress();});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveLocalProgress();});
 
 document.addEventListener('DOMContentLoaded',()=>{
   updateCTFTimer();
