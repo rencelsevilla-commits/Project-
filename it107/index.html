@@ -1181,6 +1181,18 @@ async function startCTF(){
   if(name.length<2){ if(input){input.focus();input.style.borderColor='#ff6b6b';} return; }
   if(input) input.style.borderColor='';
   teamName=name.toUpperCase();
+  // Restore the existing database session by team name before writing anything,
+  // so a refresh cannot replace an existing team's score/progress with zeros.
+  let existingTeam = null;
+  if(sb){
+    try{
+      const {data:teamState,error:teamStateError}=await sb.from('it107_teams')
+        .select('team_id,team_name,score,max_score,solved,wrong_attempts,penalty,current_challenge,status,is_locked,tab_violations')
+        .ilike('team_name',teamName)
+        .maybeSingle();
+      if(!teamStateError && teamState) existingTeam=teamState;
+    }catch(e){console.warn('Could not restore saved team progress:',e);}
+  }
   // Instructor unlocks are authoritative: clear stale browser-side locks when the database says this team is unlocked.
   let instructorUnlocked = false;
   if(sb){
@@ -1211,14 +1223,29 @@ async function startCTF(){
   if(ctfTimeExpired()){lockCTFForTime();return;}
   if(isCTFLocked){lockCTFForTabViolation();return;}
   try {
-    teamId=sessionStorage.getItem('it107_team_id')||makeTeamId();
+    teamId=(existingTeam && existingTeam.team_id) || sessionStorage.getItem('it107_team_id') || makeTeamId();
     sessionStorage.setItem('it107_team_id',teamId);
     sessionStorage.setItem('it107_team_name',teamName);
   } catch(storageError) {
-    teamId=makeTeamId();
+    teamId=(existingTeam && existingTeam.team_id) || makeTeamId();
     console.warn('Session storage unavailable; continuing without saved session.',storageError);
   }
   applyTeamShuffle();
+  if(existingTeam){
+    score=Number(existingTeam.score)||0;
+    wrongAttempts=Number(existingTeam.wrong_attempts)||0;
+    totalPenalty=Number(existingTeam.penalty)||0;
+    const savedCurrent=Number(existingTeam.current_challenge)||1;
+    current=Math.max(0,Math.min(challenges.length-1,savedCurrent-1));
+    solved=Array(challenges.length).fill(false);
+    for(let j=0;j<Math.min(Number(existingTeam.solved)||0,current);j++) solved[j]=true;
+    attempts=maxAttemptsFor(current);
+    if(existingTeam.is_locked===false && Number(existingTeam.tab_violations||0)===0){
+      isCTFLocked=false;
+      tabViolations=0;
+      try{sessionStorage.setItem('it107_tab_violations','0');}catch(e){}
+    }
+  }
   if(tabViolations>=1){lockCTFForTabViolation();return;}
   const hudName=document.getElementById('teamHudName');
   const hud=document.getElementById('teamHud');
