@@ -1177,7 +1177,8 @@ async function startCTF(){
   if(name.length<2){ if(input){input.focus();input.style.borderColor='#ff6b6b';} return; }
   if(input) input.style.borderColor='';
   teamName=name.toUpperCase();
-  // Instructor unlocks are authoritative: clear a stale browser-side lock when the database says this team is unlocked.
+  // Instructor unlocks are authoritative: clear stale browser-side locks when the database says this team is unlocked.
+  let instructorUnlocked = false;
   if(sb){
     try{
       const {data:adminState,error:adminStateError}=await sb.from('it107_teams')
@@ -1185,13 +1186,23 @@ async function startCTF(){
         .ilike('team_name',teamName)
         .maybeSingle();
       if(!adminStateError && adminState && adminState.is_locked===false && Number(adminState.tab_violations||0)===0){
+        instructorUnlocked = true;
         tabViolations=0;
         isCTFLocked=false;
-        try{sessionStorage.setItem('it107_tab_violations','0');}catch(e){}
+        try{
+          sessionStorage.setItem('it107_tab_violations','0');
+          sessionStorage.removeItem('it107_ctf_locked');
+        }catch(e){}
       }
     }catch(e){console.warn('Could not check instructor unlock state:',e);}
   }
-  try{tabViolations=Number(sessionStorage.getItem('it107_tab_violations')||0);}catch(e){}
+  // Do not let an old sessionStorage value override an instructor's database unlock.
+  if(!instructorUnlocked){
+    try{tabViolations=Number(sessionStorage.getItem('it107_tab_violations')||0);}catch(e){}
+  }else{
+    tabViolations=0;
+    isCTFLocked=false;
+  }
   initializeCTFTimer();
   if(ctfTimeExpired()){lockCTFForTime();return;}
   if(isCTFLocked){lockCTFForTabViolation();return;}
