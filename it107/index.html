@@ -1012,7 +1012,9 @@ function render(){
   if(chanceBtn){chanceBtn.disabled=chanceCount>=MAX_CHANCES;chanceBtn.textContent=chanceCount>=MAX_CHANCES?"[ CLUES USED // 0 LEFT ]":"[ GET A CLUE // "+(MAX_CHANCES-chanceCount)+" LEFT ]";}
   if(chanceInfo){chanceInfo.style.display="none";chanceInfo.textContent="";}
   const sec=document.getElementById("scrambleSection"), scr=document.getElementById("scramble");
-  if(c.scramble){
+  // Show scrambled answer letters for every challenge except the dedicated ROT13 mission.
+  // This keeps the scramble puzzle visible throughout the game while preserving ROT13 decoding.
+  if(c.scramble || (c.answer && c.type!=="Cryptography / ROT13")){
     sec.style.display="block";
     scr.innerHTML="";
     makeScrambledLetters(c).split('').forEach(ch=>{
